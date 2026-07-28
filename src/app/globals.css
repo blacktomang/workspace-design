@@ -1,26 +1,65 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
+/*
+ * Design tokens — "Bali workspace" palette.
+ * Light: warm paper / jungle green / terracotta.
+ * Dark: warm charcoal with lifted accents.
+ */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: oklch(0.972 0.008 88);
+  --foreground: oklch(0.26 0.028 55);
+  --card: oklch(0.992 0.004 90);
+  --card-foreground: oklch(0.26 0.028 55);
+  --primary: oklch(0.44 0.085 158);
+  --primary-foreground: oklch(0.97 0.01 90);
+  --accent: oklch(0.63 0.135 48);
+  --accent-foreground: oklch(0.98 0.008 90);
+  --muted: oklch(0.935 0.012 85);
+  --muted-foreground: oklch(0.5 0.02 60);
+  --border: oklch(0.895 0.014 80);
+  --ring: oklch(0.44 0.085 158);
+  --radius: 0.75rem;
+}
+
+.dark {
+  --background: oklch(0.185 0.014 58);
+  --foreground: oklch(0.945 0.01 85);
+  --card: oklch(0.225 0.016 58);
+  --card-foreground: oklch(0.945 0.01 85);
+  --primary: oklch(0.68 0.12 160);
+  --primary-foreground: oklch(0.16 0.02 60);
+  --accent: oklch(0.7 0.13 52);
+  --accent-foreground: oklch(0.16 0.02 60);
+  --muted: oklch(0.26 0.018 58);
+  --muted-foreground: oklch(0.68 0.02 70);
+  --border: oklch(0.3 0.018 60);
+  --ring: oklch(0.68 0.12 160);
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-border: var(--border);
+  --color-ring: var(--ring);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --radius-lg: var(--radius);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-sm: calc(var(--radius) - 4px);
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
