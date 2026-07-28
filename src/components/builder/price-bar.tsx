@@ -4,13 +4,13 @@ import { ArrowRight, RotateCcw } from "lucide-react";
 import Link from "next/link";
 import {
   selectItemCount,
-  selectMonthlyTotal,
+  selectWeeklyTotal,
   useWorkspaceStore,
 } from "@/lib/store/workspace-store";
-import { formatIDR } from "@/lib/utils";
+import { formatUSD } from "@/lib/utils";
 
 export function PriceBar() {
-  const total = useWorkspaceStore(selectMonthlyTotal);
+  const total = useWorkspaceStore(selectWeeklyTotal);
   const accessoryCount = useWorkspaceStore(selectItemCount);
   const reset = useWorkspaceStore((s) => s.reset);
 
@@ -19,14 +19,14 @@ export function PriceBar() {
       <div className="mx-auto flex max-w-3xl items-center justify-between gap-4 rounded-2xl border border-border bg-card/95 p-3 pl-5 shadow-lg backdrop-blur">
         <div>
           <p className="text-xs text-muted-foreground">
-            Monthly total · {accessoryCount + 2} items
+            Weekly total · {accessoryCount + 2} items
           </p>
           <p className="text-xl font-bold tracking-tight">
             <span key={total} className="animate-price">
-              {formatIDR(total)}
+              {formatUSD(total)}
             </span>
             <span className="text-sm font-normal text-muted-foreground">
-              /mo
+              /week
             </span>
           </p>
         </div>

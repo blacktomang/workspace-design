@@ -22,7 +22,7 @@ import {
   type Product,
 } from "@/lib/products";
 import { useWorkspaceStore } from "@/lib/store/workspace-store";
-import { cn, formatIDR } from "@/lib/utils";
+import { cn, formatUSD } from "@/lib/utils";
 
 const TABS: { id: Category; label: string; icon: LucideIcon }[] = [
   { id: "desk", label: "Desks", icon: Table2 },
@@ -121,8 +121,10 @@ function SelectCard({ product }: { product: Product }) {
           {product.description}
         </span>
         <span className="mt-1.5 block text-sm font-semibold text-primary">
-          {formatIDR(product.priceMonthly)}
-          <span className="text-xs font-normal text-muted-foreground">/mo</span>
+          {formatUSD(product.priceWeekly)}
+          <span className="text-xs font-normal text-muted-foreground">
+            /week
+          </span>
         </span>
       </span>
     </button>
@@ -159,7 +161,7 @@ function AccessoryCard({ product }: { product: Product }) {
       <div className="min-w-0 flex-1">
         <p className="font-medium">{product.name}</p>
         <p className="text-xs text-muted-foreground">
-          {formatIDR(product.priceMonthly)}/mo
+          {formatUSD(product.priceWeekly)}/week
         </p>
       </div>
       <div className="flex items-center gap-1.5">

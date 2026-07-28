@@ -1,6 +1,6 @@
 import { MONIS_WHATSAPP_NUMBER } from "@/lib/config";
 import { getProduct, type Product } from "@/lib/products";
-import { formatIDR } from "@/lib/utils";
+import { formatUSD } from "@/lib/utils";
 
 export interface WorkspaceSelection {
   deskId: string;
@@ -17,14 +17,14 @@ export interface RentalLine {
 }
 
 export const DURATIONS = [
-  { months: 1, discount: 0 },
-  { months: 3, discount: 0.05 },
-  { months: 6, discount: 0.1 },
-  { months: 12, discount: 0.15 },
+  { weeks: 4, discount: 0 },
+  { weeks: 12, discount: 0.05 },
+  { weeks: 26, discount: 0.1 },
+  { weeks: 52, discount: 0.15 },
 ] as const;
 
-export function discountFor(months: number) {
-  return DURATIONS.find((d) => d.months === months)?.discount ?? 0;
+export function discountFor(weeks: number) {
+  return DURATIONS.find((d) => d.weeks === weeks)?.discount ?? 0;
 }
 
 export function buildLines(sel: WorkspaceSelection): RentalLine[] {
@@ -35,8 +35,8 @@ export function buildLines(sel: WorkspaceSelection): RentalLine[] {
       id: p.id,
       name: p.name,
       qty,
-      unitPrice: p.priceMonthly,
-      lineTotal: p.priceMonthly * qty,
+      unitPrice: p.priceWeekly,
+      lineTotal: p.priceWeekly * qty,
     });
   };
   push(getProduct(sel.deskId));
@@ -53,19 +53,18 @@ export function linesTotal(lines: RentalLine[]) {
 
 export function buildWhatsAppLink(opts: {
   lines: RentalLine[];
-  months: number;
+  weeks: number;
   discount: number;
-  monthly: number;
-  effectiveMonthly: number;
+  weekly: number;
+  effectiveWeekly: number;
   total: number;
   name?: string;
 }) {
-  const { lines, months, discount, monthly, effectiveMonthly, total, name } =
-    opts;
+  const { lines, weeks, discount, weekly, effectiveWeekly, total, name } = opts;
   const itemLines = lines
     .map(
       (l) =>
-        `• ${l.qty > 1 ? `${l.qty}× ` : ""}${l.name} — ${formatIDR(l.lineTotal)}/mo`
+        `• ${l.qty > 1 ? `${l.qty}× ` : ""}${l.name} — ${formatUSD(l.lineTotal)}/week`
     )
     .join("\n");
   const message = [
@@ -73,9 +72,9 @@ export function buildWhatsAppLink(opts: {
     "",
     itemLines,
     "",
-    `Duration: ${months} month${months > 1 ? "s" : ""}${discount > 0 ? ` (−${Math.round(discount * 100)}%)` : ""}`,
-    `Monthly: ${formatIDR(effectiveMonthly)}${discount > 0 ? ` (was ${formatIDR(monthly)})` : ""}`,
-    `Total: ${formatIDR(total)}`,
+    `Duration: ${weeks} weeks${discount > 0 ? ` (−${Math.round(discount * 100)}%)` : ""}`,
+    `Weekly: ${formatUSD(effectiveWeekly)}${discount > 0 ? ` (was ${formatUSD(weekly)})` : ""}`,
+    `Total: ${formatUSD(total)}`,
     "",
     "— sent from the Workspace Designer",
   ].join("\n");

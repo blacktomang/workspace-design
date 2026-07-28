@@ -5,12 +5,13 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-const idrFormatter = new Intl.NumberFormat("id-ID", {
+const usdFormatter = new Intl.NumberFormat("en-US", {
   style: "currency",
-  currency: "IDR",
-  maximumFractionDigits: 0,
+  currency: "USD",
+  minimumFractionDigits: 2,
+  maximumFractionDigits: 2,
 });
 
-export function formatIDR(amount: number) {
-  return idrFormatter.format(amount);
+export function formatUSD(amount: number) {
+  return usdFormatter.format(amount);
 }

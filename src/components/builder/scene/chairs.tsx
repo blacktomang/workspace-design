@@ -1,8 +1,8 @@
 export function Chair({ id }: { id: string }) {
   switch (id) {
-    case "chair-breeze":
+    case "chair-task":
       return <BreezeChair />;
-    case "chair-studio":
+    case "chair-stool":
       return <StudioStool />;
     default:
       return <ErgoChair />;

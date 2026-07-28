@@ -13,7 +13,7 @@ import {
   linesTotal,
 } from "@/lib/rental";
 import { useWorkspaceStore } from "@/lib/store/workspace-store";
-import { cn, formatIDR } from "@/lib/utils";
+import { cn, formatUSD } from "@/lib/utils";
 
 export default function CheckoutSummary() {
   const hydrated = useHydrated();
@@ -21,7 +21,7 @@ export default function CheckoutSummary() {
   const chairId = useWorkspaceStore((s) => s.chairId);
   const accessories = useWorkspaceStore((s) => s.accessories);
 
-  const [months, setMonths] = useState(6);
+  const [weeks, setWeeks] = useState(26);
   const [name, setName] = useState("");
 
   if (!hydrated) {
@@ -37,16 +37,16 @@ export default function CheckoutSummary() {
   }
 
   const lines = buildLines({ deskId, chairId, accessories });
-  const monthly = linesTotal(lines);
-  const discount = discountFor(months);
-  const effectiveMonthly = Math.round(monthly * (1 - discount));
-  const total = effectiveMonthly * months;
+  const weekly = linesTotal(lines);
+  const discount = discountFor(weeks);
+  const effectiveWeekly = weekly * (1 - discount);
+  const total = effectiveWeekly * weeks;
   const waLink = buildWhatsAppLink({
     lines,
-    months,
+    weeks,
     discount,
-    monthly,
-    effectiveMonthly,
+    weekly,
+    effectiveWeekly,
     total,
     name: name.trim() || undefined,
   });
@@ -75,25 +75,23 @@ export default function CheckoutSummary() {
           <div className="rounded-2xl border border-border bg-card p-5">
             <h2 className="font-semibold">Rental duration</h2>
             <p className="mt-0.5 text-sm text-muted-foreground">
-              Longer rentals get a better monthly rate.
+              Longer rentals get a better weekly rate.
             </p>
             <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-4">
               {DURATIONS.map((d) => (
                 <button
-                  key={d.months}
+                  key={d.weeks}
                   type="button"
-                  onClick={() => setMonths(d.months)}
-                  aria-pressed={months === d.months}
+                  onClick={() => setWeeks(d.weeks)}
+                  aria-pressed={weeks === d.weeks}
                   className={cn(
                     "flex flex-col items-center gap-0.5 rounded-xl border px-3 py-2.5 transition-all",
-                    months === d.months
+                    weeks === d.weeks
                       ? "border-primary bg-primary/5 ring-2 ring-primary/15"
                       : "border-border hover:border-primary/40 hover:bg-muted/50"
                   )}
                 >
-                  <span className="font-semibold">
-                    {d.months} month{d.months > 1 ? "s" : ""}
-                  </span>
+                  <span className="font-semibold">{d.weeks} weeks</span>
                   <span
                     className={cn(
                       "text-xs",
@@ -142,7 +140,7 @@ export default function CheckoutSummary() {
                   {l.name}
                 </span>
                 <span className="shrink-0 font-medium tabular-nums">
-                  {formatIDR(l.lineTotal)}/mo
+                  {formatUSD(l.lineTotal)}/week
                 </span>
               </li>
             ))}
@@ -150,29 +148,29 @@ export default function CheckoutSummary() {
 
           <div className="mt-3 flex flex-col gap-1.5 border-t border-border pt-3 text-sm">
             <div className="flex justify-between">
-              <span className="text-muted-foreground">Monthly subtotal</span>
-              <span className="tabular-nums">{formatIDR(monthly)}</span>
+              <span className="text-muted-foreground">Weekly subtotal</span>
+              <span className="tabular-nums">{formatUSD(weekly)}</span>
             </div>
             {discount > 0 && (
               <div className="flex justify-between text-primary">
                 <span>Duration discount (−{discount * 100}%)</span>
                 <span className="tabular-nums">
-                  −{formatIDR(monthly - effectiveMonthly)}
+                  −{formatUSD(weekly - effectiveWeekly)}
                 </span>
               </div>
             )}
             <div className="mt-1 flex items-baseline justify-between">
               <span className="font-semibold">You pay</span>
               <span className="text-xl font-bold tabular-nums">
-                {formatIDR(effectiveMonthly)}
+                {formatUSD(effectiveWeekly)}
                 <span className="text-sm font-normal text-muted-foreground">
-                  /mo
+                  /week
                 </span>
               </span>
             </div>
             <div className="flex justify-between text-muted-foreground">
-              <span>{months}-month total</span>
-              <span className="tabular-nums">{formatIDR(total)}</span>
+              <span>{weeks}-week total</span>
+              <span className="tabular-nums">{formatUSD(total)}</span>
             </div>
           </div>
 

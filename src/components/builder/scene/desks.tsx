@@ -1,6 +1,6 @@
 export function Desk({ id }: { id: string }) {
   switch (id) {
-    case "desk-bamboo":
+    case "desk-standing":
       return <BambooDesk />;
     case "desk-compact":
       return <CompactDesk />;

@@ -5,91 +5,99 @@ export interface Product {
   name: string;
   category: Category;
   description: string;
-  /** Monthly rental price in IDR */
-  priceMonthly: number;
+  /** Weekly rental price in USD (matches monis.rent pricing style) */
+  priceWeekly: number;
   /** Max units that can be added (accessories) */
   maxQty?: number;
 }
 
 export const DESKS: Product[] = [
   {
-    id: "desk-sunset",
-    name: "Sunset Oak Desk",
+    id: "desk-standing",
+    name: "Electrical Adjustable Desk",
     category: "desk",
-    description: "Warm oak top, 140cm — roomy enough for dual monitors.",
-    priceMonthly: 350_000,
+    description: "Sit-stand desk with memory controller. 120×60cm black top.",
+    priceWeekly: 5,
   },
   {
-    id: "desk-bamboo",
-    name: "Bamboo Standing Desk",
+    id: "desk-wood",
+    name: "Classic Office Desk",
     category: "desk",
-    description: "Sit-stand bamboo desk for tropical workdays.",
-    priceMonthly: 450_000,
+    description: "Warm oak top with a drawer unit for your stuff.",
+    priceWeekly: 4,
   },
   {
     id: "desk-compact",
     name: "Compact Nomad Desk",
     category: "desk",
-    description: "100cm minimalist desk that fits any villa corner.",
-    priceMonthly: 250_000,
+    description: "Minimal white desk that fits any villa corner.",
+    priceWeekly: 3,
   },
 ];
 
 export const CHAIRS: Product[] = [
   {
     id: "chair-ergo",
-    name: "Ergo Flow Chair",
+    name: "Ergonomic Office Chair",
     category: "chair",
-    description: "Full lumbar support for long deep-work sessions.",
-    priceMonthly: 280_000,
+    description: "Full mesh back, headrest, and lumbar support.",
+    priceWeekly: 4,
   },
   {
-    id: "chair-breeze",
-    name: "Bali Breeze Mesh",
+    id: "chair-task",
+    name: "Bali Breeze Task Chair",
     category: "chair",
-    description: "Breathable mesh back, made for the island heat.",
-    priceMonthly: 200_000,
+    description: "Light, breathable, made for the island heat.",
+    priceWeekly: 3,
   },
   {
-    id: "chair-studio",
+    id: "chair-stool",
     name: "Studio Stool",
     category: "chair",
-    description: "Light, simple, and easy to move around.",
-    priceMonthly: 120_000,
+    description: "Simple wooden stool — easy to move around.",
+    priceWeekly: 1.5,
   },
 ];
 
 export const ACCESSORIES: Product[] = [
   {
     id: "acc-monitor",
-    name: '27" Monitor',
+    name: '27" 4K Monitor',
     category: "accessory",
-    description: "Crisp 1440p display, HDMI/USB-C included.",
-    priceMonthly: 150_000,
+    description: "Crisp 4K display with USB-C. Stack up to three.",
+    priceWeekly: 10,
     maxQty: 3,
   },
   {
-    id: "acc-lamp",
-    name: "Desk Lamp",
+    id: "acc-keyboard",
+    name: "Keyboard + Mouse",
     category: "accessory",
-    description: "Warm dimmable light for late-night sprints.",
-    priceMonthly: 75_000,
+    description: "Logitech MX-style wireless combo.",
+    priceWeekly: 3,
+    maxQty: 1,
+  },
+  {
+    id: "acc-lamp",
+    name: "Smart LED Desk Lamp",
+    category: "accessory",
+    description: "Minimal bar lamp, warm to cool dimming.",
+    priceWeekly: 2,
     maxQty: 1,
   },
   {
     id: "acc-plant",
     name: "Monstera Plant",
     category: "accessory",
-    description: "A little jungle for your desk. We water it.",
-    priceMonthly: 50_000,
+    description: "A little jungle for your setup. We water it.",
+    priceWeekly: 1.5,
     maxQty: 2,
   },
   {
-    id: "acc-keyboard",
-    name: "Keyboard + Mouse",
+    id: "acc-poster",
+    name: "Custom Poster",
     category: "accessory",
-    description: "Silent wireless combo, island-ready.",
-    priceMonthly: 90_000,
+    description: "Upload any image — we print and frame it.",
+    priceWeekly: 1,
     maxQty: 1,
   },
 ];
