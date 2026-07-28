@@ -66,6 +66,7 @@ export const ACCESSORIES: Product[] = [
     category: "accessory",
     description: "Crisp 1440p display, HDMI/USB-C included.",
     priceMonthly: 150_000,
+    maxQty: 3,
   },
   {
     id: "acc-lamp",
@@ -73,6 +74,7 @@ export const ACCESSORIES: Product[] = [
     category: "accessory",
     description: "Warm dimmable light for late-night sprints.",
     priceMonthly: 75_000,
+    maxQty: 1,
   },
   {
     id: "acc-plant",
@@ -80,6 +82,7 @@ export const ACCESSORIES: Product[] = [
     category: "accessory",
     description: "A little jungle for your desk. We water it.",
     priceMonthly: 50_000,
+    maxQty: 2,
   },
   {
     id: "acc-keyboard",
@@ -87,6 +90,7 @@ export const ACCESSORIES: Product[] = [
     category: "accessory",
     description: "Silent wireless combo, island-ready.",
     priceMonthly: 90_000,
+    maxQty: 1,
   },
 ];
 

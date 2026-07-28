@@ -29,9 +29,12 @@ export const useWorkspaceStore = create<WorkspaceState>()(
       setDesk: (id) => set({ deskId: id }),
       setChair: (id) => set({ chairId: id }),
       addAccessory: (id) =>
-        set((s) => ({
-          accessories: { ...s.accessories, [id]: (s.accessories[id] ?? 0) + 1 },
-        })),
+        set((s) => {
+          const max = getProduct(id)?.maxQty ?? 99;
+          const qty = s.accessories[id] ?? 0;
+          if (qty >= max) return s;
+          return { accessories: { ...s.accessories, [id]: qty + 1 } };
+        }),
       removeAccessory: (id) =>
         set((s) => {
           const qty = (s.accessories[id] ?? 0) - 1;
