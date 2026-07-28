@@ -3,7 +3,7 @@
 import { Palmtree } from "lucide-react";
 import { CatalogPanel } from "@/components/builder/catalog-panel";
 import { PriceBar } from "@/components/builder/price-bar";
-import { WorkspaceScene } from "@/components/builder/scene/workspace-scene";
+import { WorkspaceCanvas } from "@/components/builder/scene3d/workspace-canvas";
 import { BuilderSkeleton } from "@/components/builder/builder-skeleton";
 import { useHydrated } from "@/hooks/use-hydrated";
 
@@ -31,7 +31,7 @@ export default function BuilderExperience() {
       </header>
 
       <div className="mt-10 grid items-start gap-6 lg:grid-cols-[340px_minmax(0,1fr)]">
-        <WorkspaceScene className="order-1 animate-fade-up lg:order-2" />
+        <WorkspaceCanvas className="order-1 animate-fade-up lg:order-2" />
         <CatalogPanel />
       </div>
 

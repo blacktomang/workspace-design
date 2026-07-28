@@ -3,7 +3,7 @@
 import { ArrowLeft, MessageCircle, Truck } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
-import { WorkspaceScene } from "@/components/builder/scene/workspace-scene";
+import { WorkspaceCanvas } from "@/components/builder/scene3d/workspace-canvas";
 import { useHydrated } from "@/hooks/use-hydrated";
 import {
   buildLines,
@@ -70,7 +70,7 @@ export default function CheckoutSummary() {
 
       <div className="mt-8 grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_400px]">
         <div className="flex flex-col gap-6">
-          <WorkspaceScene className="animate-fade-up" />
+          <WorkspaceCanvas className="animate-fade-up" />
 
           <div className="rounded-2xl border border-border bg-card p-5">
             <h2 className="font-semibold">Rental duration</h2>
