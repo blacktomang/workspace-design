@@ -143,7 +143,7 @@ export function LaptopStand() {
 
   return (
     <Clickable onSwap={() => removeAccessory("acc-laptop-stand")} label="laptop stand">
-      <group ref={ref} position={[DESK_CENTER[0] - 0.45, DESK_TOP_Y, DESK_CENTER[2] - 0.12]}>
+      <group ref={ref} position={[DESK_CENTER[0] - 0.7, DESK_TOP_Y, DESK_CENTER[2] + 0.18]}>
         {/* stand base */}
         <RoundedBox args={[0.28, 0.015, 0.22]} radius={0.005} position={[0, 0.008, 0]}>
           <meshStandardMaterial color="#8a939a" roughness={0.5} metalness={0.6} />
