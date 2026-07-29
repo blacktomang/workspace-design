@@ -5,10 +5,11 @@ import { MONITOR_IDS, useWorkspaceStore } from "@/lib/store/workspace-store";
 import { usePopIn } from "../use-pop-in";
 import { DESK_CENTER, DESK_TOP_Y } from "./desks";
 import { Clickable } from "./clickable";
+import { GamingMonitorModel } from "./gaming-monitor";
 
-const SCREEN_COLORS = ["#46b39a", "#e8913f"];
+const SCREEN_COLORS = ["#46b39a", "#ff0055"];
 
-/** Single monitor positioned at desk center; cycles between 27" and 34" types. */
+/** Single monitor positioned at desk center; cycles between 27" and 49" gaming types. */
 export function Monitors({ id }: { id: string }) {
   const setMonitor = useWorkspaceStore((s) => s.setMonitor);
   const cycle = () => {
@@ -16,14 +17,15 @@ export function Monitors({ id }: { id: string }) {
     setMonitor(MONITOR_IDS[(idx + 1) % MONITOR_IDS.length]);
   };
 
-  const isUltrawide = id === "acc-monitor-34";
+  const isGamingUltraWide = id === "acc-monitor-49-gaming";
 
   return (
     <Clickable onSwap={cycle} label="monitor">
       <MonitorModel
         position={[DESK_CENTER[0], DESK_TOP_Y, DESK_CENTER[2] - 0.12]}
-        accent={isUltrawide ? SCREEN_COLORS[1] : SCREEN_COLORS[0]}
-        ultrawide={isUltrawide}
+        accent={isGamingUltraWide ? SCREEN_COLORS[1] : SCREEN_COLORS[0]}
+        ultrawide={isGamingUltraWide}
+        gaming={isGamingUltraWide}
       />
     </Clickable>
   );
@@ -33,39 +35,56 @@ function MonitorModel({
   position,
   accent,
   ultrawide,
+  gaming,
 }: {
   position: [number, number, number];
   accent: string;
   ultrawide: boolean;
+  gaming?: boolean;
 }) {
   const ref = usePopIn("monitor");
-  const sw = ultrawide ? 0.82 : 0.62;
-  const sh = ultrawide ? 0.32 : 0.36;
-  const screenW = ultrawide ? 0.78 : 0.58;
-  const screenH = ultrawide ? 0.28 : 0.32;
+
+  const monitorWidth = ultrawide ? 0.78 : 0.58;
+  const monitorHeight = ultrawide ? 0.28 : 0.32;
+  const bezelThickness = 0.025;
+
+  if (gaming) {
+    // Procedural curved ultra-wide gaming monitor (origin at base level)
+    return (
+      <group ref={ref} position={position}>
+        <GamingMonitorModel accent={accent} />
+      </group>
+    );
+  }
 
   return (
     <group ref={ref} position={position}>
-      <RoundedBox args={[0.2, 0.015, 0.16]} radius={0.005} position={[0, 0.008, 0]}>
-        <meshStandardMaterial color="#1c1c20" roughness={0.4} />
-      </RoundedBox>
-      <mesh position={[0, 0.12, 0]}>
-        <boxGeometry args={[0.04, 0.22, 0.03]} />
-        <meshStandardMaterial color="#1c1c20" roughness={0.4} />
-      </mesh>
-      <RoundedBox args={[sw, sh, 0.025]} radius={0.008} position={[0, 0.4, 0]}>
-        <meshStandardMaterial color="#1c1c20" roughness={0.4} />
-      </RoundedBox>
-      {/* glowing screen */}
-      <mesh position={[0, 0.4, 0.014]}>
-        <planeGeometry args={[screenW, screenH]} />
-        <meshStandardMaterial
-          color="#0d1714"
-          emissive={accent}
-          emissiveIntensity={0.85}
-          roughness={0.3}
-        />
-      </mesh>
+      {/* Display assembly group */}
+      <group>
+        {/* Bezel frame */}
+        <RoundedBox
+          args={[monitorWidth + bezelThickness * 2, monitorHeight + bezelThickness * 2, 0.03]}
+          radius={0.008}
+          position={[0, 0.52, 0]}
+        >
+          <meshStandardMaterial color="#1c1c20" roughness={0.4} metalness={0.1} />
+        </RoundedBox>
+
+        {/* Screen panel - slightly inset */}
+        <mesh position={[0, 0.52, 0.016]}>
+          <planeGeometry args={[monitorWidth, monitorHeight]} />
+          <meshBasicMaterial color={accent} toneMapped={false} />
+        </mesh>
+      </group>
+
+      {/* Stand assembly */}
+      <group>
+        {/* Standard: round base with curved neck */}
+        <mesh position={[0, 0.12, 0]}>
+          <boxGeometry args={[0.04, 0.22, 0.03]} />
+          <meshStandardMaterial color="#1c1c20" roughness={0.4} />
+        </mesh>
+      </group>
     </group>
   );
 }
@@ -79,7 +98,7 @@ export function Lamp() {
   );
 
   // Position to the right of the monitor, tall enough to clear the screen
-  const lampX = hasMonitor ? DESK_CENTER[0] + 0.52 : DESK_CENTER[0] + 0.58;
+  const lampX = hasMonitor ? DESK_CENTER[0] + 0.62 : DESK_CENTER[0] + 0.68;
 
   return (
     <Clickable onSwap={() => removeAccessory("acc-lamp")} label="lamp">
