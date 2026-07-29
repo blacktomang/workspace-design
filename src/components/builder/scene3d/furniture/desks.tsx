@@ -22,7 +22,7 @@ export function DeskModel({ id }: { id: string }) {
     <Clickable onSwap={cycle} label="desk">
       <group ref={ref}>
         {id === "desk-standing" ? (
-          <StandingDesk />
+          <MotorizedStandingDesk />
         ) : id === "desk-compact" ? (
           <CompactDesk />
         ) : (
@@ -38,7 +38,7 @@ function StandingDesk() {
   return (
     <group>
       <RoundedBox
-        args={[1.4, 0.04, 0.7]}
+        args={[1.8, 0.04, 0.7]}
         radius={0.01}
         creaseAngle={0.02}
         position={[DESK_CENTER[0], DESK_TOP_Y - 0.02, DESK_CENTER[2]]}
@@ -66,12 +66,136 @@ function StandingDesk() {
   );
 }
 
+/** Motorized Standing Desk Pro — premium dual-motor with digital display, grommets, side basket */
+function MotorizedStandingDesk() {
+  return (
+    <group>
+      {/* Desktop with rounded profile */}
+      <RoundedBox
+        args={[1.8, 0.04, 0.7]}
+        radius={0.01}
+        creaseAngle={0.02}
+        position={[DESK_CENTER[0], DESK_TOP_Y - 0.02, DESK_CENTER[2]]}
+      >
+        <meshStandardMaterial color="#1E1E20" roughness={0.45} metalness={0.05} />
+      </RoundedBox>
+
+      {/* Left cable grommet ring */}
+      <mesh position={[DESK_CENTER[0] - 0.35, DESK_TOP_Y - 0.0125, DESK_CENTER[2] - 0.2]}>
+        <cylinderGeometry args={[0.024, 0.02, 0.028, 32]} />
+        <meshStandardMaterial color="#151517" roughness={0.3} />
+      </mesh>
+      {/* Right cable grommet ring */}
+      <mesh position={[DESK_CENTER[0] + 0.35, DESK_TOP_Y - 0.0125, DESK_CENTER[2] - 0.2]}>
+        <cylinderGeometry args={[0.024, 0.02, 0.028, 32]} />
+        <meshStandardMaterial color="#151517" roughness={0.3} />
+      </mesh>
+
+      {/* Under-frame crossbar */}
+      <mesh position={[DESK_CENTER[0], DESK_TOP_Y - 0.03, DESK_CENTER[2] - 0.08]}>
+        <boxGeometry args={[1.05, 0.035, 0.05]} />
+        <meshStandardMaterial color="#18181A" roughness={0.35} metalness={0.2} />
+      </mesh>
+
+      {/* Mounting brackets */}
+      <mesh position={[DESK_CENTER[0] - 0.5, DESK_TOP_Y - 0.02, DESK_CENTER[2] - 0.08]}>
+        <boxGeometry args={[0.08, 0.02, 0.48]} />
+        <meshStandardMaterial color="#18181A" roughness={0.35} metalness={0.2} />
+      </mesh>
+      <mesh position={[DESK_CENTER[0] + 0.5, DESK_TOP_Y - 0.02, DESK_CENTER[2] - 0.08]}>
+        <boxGeometry args={[0.08, 0.02, 0.48]} />
+        <meshStandardMaterial color="#18181A" roughness={0.35} metalness={0.2} />
+      </mesh>
+
+      {/* Telescoping leg assemblies (left and right) */}
+      {[-0.5, 0.5].map((legX) => (
+        <group key={legX} position={[DESK_CENTER[0] + legX, 0, DESK_CENTER[2]]}>
+          {/* Top collar housing */}
+          <mesh position={[0, 0.67, 0]}>
+            <boxGeometry args={[0.11, 0.06, 0.08]} />
+            <meshStandardMaterial color="#18181A" roughness={0.35} metalness={0.2} />
+          </mesh>
+          {/* Outer silver column */}
+          <mesh position={[0, 0.51, 0]}>
+            <boxGeometry args={[0.07, 0.28, 0.07]} />
+            <meshStandardMaterial color="#C0C4C8" roughness={0.25} metalness={0.85} />
+          </mesh>
+          {/* Inner silver column */}
+          <mesh position={[0, 0.23, 0]}>
+            <boxGeometry args={[0.06, 0.28, 0.06]} />
+            <meshStandardMaterial color="#C0C4C8" roughness={0.25} metalness={0.85} />
+          </mesh>
+          {/* Foot connector bracket */}
+          <mesh position={[0, 0.08, 0]}>
+            <boxGeometry args={[0.1, 0.02, 0.02]} />
+            <meshStandardMaterial color="#18181A" roughness={0.35} metalness={0.2} />
+          </mesh>
+          {/* Foot base bar */}
+          <mesh position={[0, 0.045, 0]}>
+            <boxGeometry args={[0.08, 0.03, 0.68]} />
+            <meshStandardMaterial color="#18181A" roughness={0.35} metalness={0.2} />
+          </mesh>
+          {/* Leveling pads (front and rear) */}
+          <mesh position={[0, 0.012, 0.28]}>
+            <cylinderGeometry args={[0.022, 0.025, 0.016, 16]} />
+            <meshStandardMaterial color="#151517" roughness={0.3} />
+          </mesh>
+          <mesh position={[0, 0.012, -0.28]}>
+            <cylinderGeometry args={[0.022, 0.025, 0.016, 16]} />
+            <meshStandardMaterial color="#151517" roughness={0.3} />
+          </mesh>
+        </group>
+      ))}
+
+      {/* Digital control panel */}
+      <mesh position={[DESK_CENTER[0] + 0.45, DESK_TOP_Y - 0.03, DESK_CENTER[2] + 0.32]}>
+        <boxGeometry args={[0.13, 0.035, 0.055]} />
+        <meshStandardMaterial color="#151517" roughness={0.3} />
+      </mesh>
+      {/* Control screen glass */}
+      <mesh position={[DESK_CENTER[0] + 0.45, DESK_TOP_Y - 0.03, DESK_CENTER[2] + 0.348]}>
+        <planeGeometry args={[0.12, 0.028]} />
+        <meshPhysicalMaterial
+          color="#0A0B0D"
+          roughness={0.1}
+          transmission={0.1}
+          ior={1.52}
+          thickness={0.002}
+          clearcoat={1}
+          clearcoatRoughness={0.05}
+        />
+      </mesh>
+      {/* UI backlight glow */}
+      <mesh position={[DESK_CENTER[0] + 0.45, DESK_TOP_Y - 0.03, DESK_CENTER[2] + 0.349]}>
+        <planeGeometry args={[0.11, 0.025]} />
+        <meshStandardMaterial
+          color="#E0E8FF"
+          emissive="#60A0FF"
+          emissiveIntensity={0.8}
+          transparent
+          opacity={0.95}
+        />
+      </mesh>
+
+      {/* Side wire basket holder (left) */}
+      <mesh position={[DESK_CENTER[0] - 0.58, DESK_TOP_Y - 0.05, DESK_CENTER[2]]}>
+        <boxGeometry args={[0.04, 0.03, 0.04]} />
+        <meshStandardMaterial color="#18181A" roughness={0.35} metalness={0.2} />
+      </mesh>
+      <mesh position={[DESK_CENTER[0] - 0.58, DESK_TOP_Y - 0.09, DESK_CENTER[2]]}>
+        <boxGeometry args={[0.08, 0.03, 0.16]} />
+        <meshStandardMaterial color="#18181A" roughness={0.35} metalness={0.2} />
+      </mesh>
+    </group>
+  );
+}
+
 /** Classic Office Desk — oak top, four legs, drawer unit */
 function WoodDesk() {
   return (
     <group>
       <RoundedBox
-        args={[1.4, 0.04, 0.7]}
+        args={[1.8, 0.04, 0.7]}
         radius={0.01}
         position={[DESK_CENTER[0], DESK_TOP_Y - 0.02, DESK_CENTER[2]]}
       >
@@ -111,7 +235,7 @@ function CompactDesk() {
   return (
     <group>
       <RoundedBox
-        args={[1.1, 0.035, 0.6]}
+        args={[1.8, 0.035, 0.6]}
         radius={0.01}
         position={[DESK_CENTER[0], DESK_TOP_Y - 0.0175, DESK_CENTER[2]]}
       >

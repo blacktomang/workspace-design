@@ -61,12 +61,20 @@ export const CHAIRS: Product[] = [
 
 export const ACCESSORIES: Product[] = [
   {
-    id: "acc-monitor",
-    name: '27" 4K Monitor',
+    id: "acc-monitor-27",
+    name: '27" 4K Multimedia Monitor',
     category: "accessory",
-    description: "Crisp 4K display with USB-C. Stack up to three.",
+    description: "Crisp 4K display with USB-C. Perfect for productivity.",
     priceWeekly: 10,
-    maxQty: 3,
+    maxQty: 1,
+  },
+  {
+    id: "acc-monitor-34",
+    name: '34" 4K Gaming Monitor',
+    category: "accessory",
+    description: "Ultrawide curved display — immersive and fast.",
+    priceWeekly: 14,
+    maxQty: 1,
   },
   {
     id: "acc-keyboard",
@@ -80,7 +88,7 @@ export const ACCESSORIES: Product[] = [
     id: "acc-lamp",
     name: "Smart LED Desk Lamp",
     category: "accessory",
-    description: "Minimal bar lamp, warm to cool dimming.",
+    description: "Tall bar lamp, warm to cool dimming.",
     priceWeekly: 2,
     maxQty: 1,
   },
@@ -98,6 +106,14 @@ export const ACCESSORIES: Product[] = [
     category: "accessory",
     description: "Upload any image — we print and frame it.",
     priceWeekly: 1,
+    maxQty: 1,
+  },
+  {
+    id: "acc-laptop-stand",
+    name: "Ergonomic Laptop Stand",
+    category: "accessory",
+    description: "Adjustable aluminum stand with a laptop — save your neck.",
+    priceWeekly: 4,
     maxQty: 1,
   },
 ];

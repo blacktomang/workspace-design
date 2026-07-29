@@ -2,6 +2,8 @@ export function Desk({ id }: { id: string }) {
   switch (id) {
     case "desk-standing":
       return <BambooDesk />;
+    case "desk-motorized-standing":
+      return <MotorizedStandingDesk />;
     case "desk-compact":
       return <CompactDesk />;
     default:
@@ -39,6 +41,42 @@ function BambooDesk() {
       {/* top */}
       <rect x="266" y="348" width="368" height="16" rx="6" fill="#e3c98f" />
       <rect x="266" y="360" width="368" height="5" rx="2" fill="#c9ab6d" />
+    </g>
+  );
+}
+
+/** Motorized Standing Desk Pro — premium black, digital controller, grommets */
+function MotorizedStandingDesk() {
+  return (
+    <g>
+      {/* Crossbar connecting legs */}
+      <rect x="310" y="470" width="280" height="8" rx="4" fill="#18181A" />
+      {/* Upper leg tubes (silver) */}
+      <rect x="298" y="363" width="14" height="90" rx="6" fill="#C0C4C8" />
+      <rect x="588" y="363" width="14" height="90" rx="6" fill="#C0C4C8" />
+      {/* Lower leg tubes (silver telescoping) */}
+      <rect x="300" y="453" width="10" height="90" rx="4" fill="#C0C4C8" />
+      <rect x="590" y="453" width="10" height="90" rx="4" fill="#C0C4C8" />
+      {/* Leg foot connectors */}
+      <rect x="294" y="543" width="16" height="6" rx="3" fill="#18181A" />
+      <rect x="590" y="543" width="16" height="6" rx="3" fill="#18181A" />
+      {/* Foot base bars */}
+      <rect x="296" y="549" width="20" height="12" rx="4" fill="#18181A" />
+      <rect x="588" y="549" width="20" height="12" rx="4" fill="#18181A" />
+      {/* Cable grommet rings on desktop */}
+      <circle cx="338" cy="356" r="4" fill="#151517" />
+      <circle cx="566" cy="356" r="4" fill="#151517" />
+      {/* Main desktop top */}
+      <rect x="266" y="348" width="368" height="16" rx="6" fill="#1E1E20" />
+      {/* Desktop edge highlight */}
+      <rect x="266" y="360" width="368" height="5" rx="2" fill="#2a2a2e" />
+      {/* Control panel with screen */}
+      <rect x="586" y="332" width="32" height="26" rx="3" fill="#151517" />
+      <rect x="588" y="334" width="28" height="14" rx="2" fill="#0A0B0D" />
+      <rect x="589" y="335" width="26" height="12" rx="1.5" fill="#E0E8FF" fillOpacity="0.9" />
+      {/* Side basket holder (left side) */}
+      <rect x="268" y="360" width="6" height="10" fill="#18181A" />
+      <rect x="266" y="370" width="10" height="4" fill="#18181A" />
     </g>
   );
 }
