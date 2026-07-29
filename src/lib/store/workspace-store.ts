@@ -39,7 +39,7 @@ export interface WorkspaceState {
 const DEFAULT_STATE = {
   deskId: DESKS[0].id,
   chairId: CHAIRS[0].id,
-  monitorId: MONITOR_IDS[0],
+  monitorId: MONITOR_IDS[1],
   accessories: {} as Record<string, number>,
   posterImage: null as string | null,
   isFullscreen: false,
