@@ -107,7 +107,7 @@ export default function CanvasInner() {
   const hasLamp = (accessories["acc-lamp"] ?? 0) > 0;
   const hasPlant = (accessories["acc-plant"] ?? 0) > 0;
   const hasKeyboard = (accessories["acc-keyboard"] ?? 0) > 0;
-  const hasPoster = (accessories["acc-poster"] ?? 0) > 0;
+
   const hasLaptopStand = (accessories["acc-laptop-stand"] ?? 0) > 0;
 
   const handleClick = isFullscreen
@@ -152,7 +152,7 @@ export default function CanvasInner() {
       {hasLamp && <Lamp />}
       {hasKeyboard && <KeyboardSet />}
       {hasPlant && <Plant />}
-      {hasPoster && <Poster />}
+      <Poster />
       {hasLaptopStand && <LaptopStand />}
 
       <ContactShadows

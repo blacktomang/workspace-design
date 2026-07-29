@@ -1,6 +1,7 @@
 "use client";
 
-import { RoundedBox } from "@react-three/drei";
+import { RoundedBox, useCursor } from "@react-three/drei";
+import type { ThreeEvent } from "@react-three/fiber";
 import { useEffect, useMemo, useState } from "react";
 import * as THREE from "three";
 import { useWorkspaceStore } from "@/lib/store/workspace-store";
@@ -9,7 +10,6 @@ import { usePopIn } from "../use-pop-in";
 const PLANE_W = 0.64;
 const PLANE_H = 0.84;
 
-/** Placeholder art shown until the user uploads an image. */
 function makePlaceholder() {
   const canvas = document.createElement("canvas");
   canvas.width = 256;
@@ -21,21 +21,23 @@ function makePlaceholder() {
   ctx.fillStyle = g;
   ctx.fillRect(0, 0, 256, 336);
   ctx.fillStyle = "rgba(255,255,255,0.9)";
-  ctx.font = "bold 24px system-ui, sans-serif";
+  ctx.font = "bold 22px system-ui, sans-serif";
   ctx.textAlign = "center";
-  ctx.fillText("YOUR", 128, 158);
-  ctx.fillText("POSTER", 128, 188);
+  ctx.fillText("add your", 128, 158);
+  ctx.fillText("poster", 128, 188);
   const tex = new THREE.CanvasTexture(canvas);
   tex.colorSpace = THREE.SRGBColorSpace;
   return tex;
 }
 
-/** Framed poster on the wall; shows the user's uploaded image (cover-cropped). */
 export function Poster() {
   const ref = usePopIn("poster");
   const posterImage = useWorkspaceStore((s) => s.posterImage);
+  const setPosterImage = useWorkspaceStore((s) => s.setPosterImage);
   const [loaded, setLoaded] = useState<{ src: string; tex: THREE.Texture } | null>(null);
   const placeholder = useMemo(() => makePlaceholder(), []);
+  const [hovered, setHovered] = useState(false);
+  useCursor(hovered, "pointer", "auto");
 
   useEffect(() => {
     if (!posterImage) return;
@@ -45,7 +47,6 @@ export function Poster() {
       if (cancelled) return;
       const tex = new THREE.Texture(img);
       tex.colorSpace = THREE.SRGBColorSpace;
-      // cover-crop to the frame's aspect ratio
       const planeAspect = PLANE_W / PLANE_H;
       const imgAspect = img.width / img.height;
       if (imgAspect > planeAspect) {
@@ -69,8 +70,34 @@ export function Poster() {
   const map =
     posterImage && loaded?.src === posterImage ? loaded.tex : placeholder;
 
+  const handleClick = (e: ThreeEvent<MouseEvent>) => {
+    e.stopPropagation();
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = "image/*";
+    input.onchange = () => {
+      const file = input.files?.[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        setPosterImage(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    };
+    input.click();
+  };
+
   return (
-    <group ref={ref} position={[1.45, 1.55, -1.98]}>
+    <group
+      ref={ref}
+      position={[1.45, 1.55, -1.98]}
+      onClick={handleClick}
+      onPointerOver={(e) => {
+        e.stopPropagation();
+        setHovered(true);
+      }}
+      onPointerOut={() => setHovered(false)}
+    >
       <RoundedBox args={[0.72, 0.92, 0.03]} radius={0.008}>
         <meshStandardMaterial color="#1f1f22" roughness={0.5} />
       </RoundedBox>
