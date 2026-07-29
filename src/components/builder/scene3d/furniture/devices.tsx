@@ -260,18 +260,18 @@ export function LaptopStand() {
 
       {/* Main column */}
       <mesh position={[0, 0.12, 0]}>
-        <cylinderGeometry args={[0.022, 0.028, 0.22, 20]} />
+        <cylinderGeometry args={[0.02, 0.028, 0.25, 20]} />
         <meshStandardMaterial {...ALUMINUM_DARK} />
       </mesh>
 
       {/* Height-adjust collar */}
-      <mesh position={[0, 0.17, 0]}>
+      <mesh position={[0, 1, 0]}>
         <cylinderGeometry args={[0.03, 0.03, 0.014, 20]} />
         <meshStandardMaterial {...ALUMINUM_JOINT} />
       </mesh>
 
       {/* Horizontal arm */}
-      <mesh position={[0, 0.25, 0.05]} rotation={[0.22, 0, 0]}>
+      <mesh position={[0, 0.255, 0.05]} rotation={[0, 0, 0]}>
         <boxGeometry args={[0.036, 0.032, 0.11]} />
         <meshStandardMaterial {...ALUMINUM_DARK} />
       </mesh>
@@ -288,7 +288,7 @@ export function LaptopStand() {
       </RoundedBox>
 
       {/* ── Laptop ────────────────────────────────────────────── */}
-      <group position={[0, 0.304, 0.1]}>
+      <group position={[0, 0.297, 0.1]}>
         {/* Rubber feet */}
         {[[-0.14, 0.07], [0.14, 0.07], [-0.14, -0.07], [0.14, -0.07]].map(([x, z], i) => (
           <mesh key={i} position={[x, 0.003, z]}>
@@ -298,7 +298,7 @@ export function LaptopStand() {
         ))}
 
         {/* Bottom case */}
-        <group position={[0, 0.012, 0]} rotation={[-0.06, 0, 0]}>
+        <group position={[0, 0.012, 0]} rotation={[-0.02, 0, 0]}>
           {/* Unibody shell */}
           <RoundedBox args={[0.34, 0.016, 0.21]} radius={0.005}>
             <meshStandardMaterial {...ALUMINUM} />
@@ -346,38 +346,40 @@ export function LaptopStand() {
         </group>
 
         {/* ── Hinge ──────────────────────────────────────── */}
-        <mesh position={[0, 0.018, -0.09]} rotation={[0, 0, Math.PI / 2]}>
+        <mesh position={[0, 0.02, -0.105]} rotation={[0, 0, Math.PI / 2]}>
           <cylinderGeometry args={[0.009, 0.009, 0.29, 12]} />
           <meshStandardMaterial color="#3a3a40" roughness={0.4} metalness={0.45} />
         </mesh>
-        <mesh position={[0, 0.022, -0.09]} rotation={[0, 0, Math.PI / 2]}>
+        <mesh position={[0, 0.024, -0.105]} rotation={[0, 0, Math.PI / 2]}>
           <cylinderGeometry args={[0.007, 0.007, 0.27, 12]} />
           <meshStandardMaterial color="#2a2a2f" roughness={0.3} metalness={0.55} />
         </mesh>
 
         {/* ── Screen / Lid ───────────────────────────────── */}
-        <group position={[0, 0.018, -0.09]} rotation={[Math.PI / 2, 0, 0]}>
-          {/* Lid back cover */}
-          <RoundedBox args={[0.34, 0.23, 0.014]} radius={0.005}>
-            <meshStandardMaterial {...ALUMINUM} />
-          </RoundedBox>
+        <group position={[0, 0.02, -0.105]} rotation={[0.2, 0, 0]}>
+          <group position={[0, 0.115, 0]}>
+            {/* Lid back cover */}
+            <RoundedBox args={[0.34, 0.23, 0.014]} radius={0.005}>
+              <meshStandardMaterial {...ALUMINUM} />
+            </RoundedBox>
 
-          {/* Bezel frame */}
-          <RoundedBox args={[0.32, 0.215, 0.005]} radius={0.003} position={[0, 0, 0.01]}>
-            <meshStandardMaterial {...ANTHRACITE} />
-          </RoundedBox>
+            {/* Bezel frame */}
+            <RoundedBox args={[0.32, 0.215, 0.005]} radius={0.003} position={[0, 0, 0.01]}>
+              <meshStandardMaterial {...ANTHRACITE} />
+            </RoundedBox>
 
-          {/* Screen panel */}
-          <mesh position={[0, 0, 0.014]}>
-            <planeGeometry args={[0.3, 0.19]} />
-            <meshBasicMaterial map={screenTex} toneMapped={false} />
-          </mesh>
+            {/* Screen panel */}
+            <mesh position={[0, 0, 0.014]}>
+              <planeGeometry args={[0.3, 0.19]} />
+              <meshBasicMaterial map={screenTex} toneMapped={false} />
+            </mesh>
 
-          {/* Webcam dot */}
-          <mesh position={[0, 0.105, 0.017]}>
-            <cylinderGeometry args={[0.003, 0.003, 0.001, 8]} />
-            <meshStandardMaterial color="#0a0a0f" roughness={0.5} />
-          </mesh>
+            {/* Webcam dot */}
+            <mesh position={[0, 0.105, 0.017]}>
+              <cylinderGeometry args={[0.003, 0.003, 0.001, 8]} />
+              <meshStandardMaterial color="#0a0a0f" roughness={0.5} />
+            </mesh>
+          </group>
         </group>
       </group>
     </group>
