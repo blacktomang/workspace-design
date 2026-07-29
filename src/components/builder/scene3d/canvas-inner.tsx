@@ -6,7 +6,7 @@ import { useState } from "react";
 import { useWorkspaceStore } from "@/lib/store/workspace-store";
 import { ChairModel } from "./furniture/chairs";
 import { DeskModel } from "./furniture/desks";
-import { KeyboardSet, Lamp, Monitors } from "./furniture/devices";
+import { KeyboardSet, Lamp, LaptopStand, Monitors } from "./furniture/devices";
 import { Plant } from "./furniture/plant";
 import { Poster } from "./furniture/poster";
 import { Room } from "./room";
@@ -18,15 +18,17 @@ import { Room } from "./room";
 export default function CanvasInner() {
   const deskId = useWorkspaceStore((s) => s.deskId);
   const chairId = useWorkspaceStore((s) => s.chairId);
+  const monitorId = useWorkspaceStore((s) => s.monitorId);
   const accessories = useWorkspaceStore((s) => s.accessories);
 
   const [interacted, setInteracted] = useState(false);
 
-  const monitorCount = Math.min(accessories["acc-monitor"] ?? 0, 3);
+  const hasMonitor = (accessories["acc-monitor-27"] ?? 0) + (accessories["acc-monitor-34"] ?? 0) > 0;
   const hasLamp = (accessories["acc-lamp"] ?? 0) > 0;
   const hasPlant = (accessories["acc-plant"] ?? 0) > 0;
   const hasKeyboard = (accessories["acc-keyboard"] ?? 0) > 0;
   const hasPoster = (accessories["acc-poster"] ?? 0) > 0;
+  const hasLaptopStand = (accessories["acc-laptop-stand"] ?? 0) > 0;
 
   return (
     <Canvas
@@ -43,11 +45,12 @@ export default function CanvasInner() {
       <Room />
       <DeskModel id={deskId} />
       <ChairModel id={chairId} />
-      {monitorCount > 0 && <Monitors count={monitorCount} />}
+      {hasMonitor && <Monitors id={monitorId} />}
       {hasLamp && <Lamp />}
       {hasKeyboard && <KeyboardSet />}
       {hasPlant && <Plant />}
       {hasPoster && <Poster />}
+      {hasLaptopStand && <LaptopStand />}
 
       <ContactShadows
         position={[0, 0.001, 0]}
