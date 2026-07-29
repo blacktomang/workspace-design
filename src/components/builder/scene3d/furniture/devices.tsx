@@ -191,54 +191,196 @@ export function Lamp() {
   );
 }
 
-/** Ergonomic laptop stand with an open laptop on it. */
+function makeLaptopScreenTex() {
+  const canvas = document.createElement("canvas");
+  canvas.width = 512;
+  canvas.height = 340;
+  const ctx = canvas.getContext("2d")!;
+
+  const g = ctx.createLinearGradient(0, 0, 0, 340);
+  g.addColorStop(0, "#1a1a30");
+  g.addColorStop(0.5, "#16213e");
+  g.addColorStop(1, "#0f0f23");
+  ctx.fillStyle = g;
+  ctx.fillRect(0, 0, 512, 340);
+
+  ctx.fillStyle = "rgba(122,111,208,0.12)";
+  ctx.beginPath();
+  ctx.arc(400, 80, 120, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.fillStyle = "rgba(70,179,154,0.08)";
+  ctx.beginPath();
+  ctx.arc(120, 260, 100, 0, Math.PI * 2);
+  ctx.fill();
+
+  ctx.fillStyle = "rgba(255,255,255,0.07)";
+  ctx.fillRect(0, 0, 512, 22);
+
+  ctx.fillStyle = "rgba(255,255,255,0.05)";
+  ctx.beginPath();
+  ctx.roundRect(180, 288, 152, 38, 10);
+  ctx.fill();
+
+  ctx.fillStyle = "rgba(255,255,255,0.25)";
+  [228, 256, 284].forEach((x) => {
+    ctx.beginPath();
+    ctx.arc(x, 307, 9, 0, Math.PI * 2);
+    ctx.fill();
+  });
+
+  ctx.fillStyle = "rgba(255,255,255,0.55)";
+  ctx.font = "12px system-ui, -apple-system, sans-serif";
+  ctx.textAlign = "right";
+  ctx.fillText("Tue 14:28", 500, 15);
+
+  const tex = new THREE.CanvasTexture(canvas);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  tex.minFilter = THREE.LinearFilter;
+  tex.magFilter = THREE.LinearFilter;
+  return tex;
+}
+
+const ALUMINUM = { color: "#c8ccd0", roughness: 0.22, metalness: 0.88 };
+const ALUMINUM_DARK = { color: "#a0a5aa", roughness: 0.25, metalness: 0.82 };
+const ALUMINUM_JOINT = { color: "#8a8f94", roughness: 0.35, metalness: 0.65 };
+const ANTHRACITE = { color: "#1a1a1e", roughness: 0.5 };
+const KEYCAP = { color: "#2c2d33", roughness: 0.55 };
+
 export function LaptopStand() {
   const ref = usePopIn("laptop-stand");
+  const screenTex = useMemo(() => makeLaptopScreenTex(), []);
 
   return (
     <group ref={ref} position={[DESK_CENTER[0] - 0.7, DESK_TOP_Y, DESK_CENTER[2] + 0.18]}>
-        {/* stand base */}
-        <RoundedBox args={[0.28, 0.015, 0.22]} radius={0.005} position={[0, 0.008, 0]}>
-          <meshStandardMaterial color="#8a939a" roughness={0.5} metalness={0.6} />
-        </RoundedBox>
-        {/* support arm */}
-        <mesh position={[0, 0.16, -0.04]} rotation={[-0.2, 0, 0]}>
-          <boxGeometry args={[0.06, 0.28, 0.06]} />
-          <meshStandardMaterial color="#8a939a" roughness={0.5} metalness={0.6} />
-        </mesh>
-        {/* laptop base (keyboard deck, angled) */}
-        <group position={[0, 0.32, -0.06]} rotation={[-0.25, 0, 0]}>
-          <RoundedBox args={[0.3, 0.018, 0.2]} radius={0.004}>
-            <meshStandardMaterial color="#c0c4c8" roughness={0.4} metalness={0.7} />
-          </RoundedBox>
-          {/* keyboard area */}
-          <mesh position={[0, 0.011, 0.03]}>
-            <boxGeometry args={[0.22, 0.004, 0.12]} />
-            <meshStandardMaterial color="#2e3138" roughness={0.6} />
+      {/* ── Stand ─────────────────────────────────────────────── */}
+      {/* Base plate */}
+      <RoundedBox args={[0.24, 0.012, 0.19]} radius={0.006} position={[0, 0.006, 0]}>
+        <meshStandardMaterial {...ALUMINUM_DARK} />
+      </RoundedBox>
+
+      {/* Main column */}
+      <mesh position={[0, 0.12, 0]}>
+        <cylinderGeometry args={[0.022, 0.028, 0.22, 20]} />
+        <meshStandardMaterial {...ALUMINUM_DARK} />
+      </mesh>
+
+      {/* Height-adjust collar */}
+      <mesh position={[0, 0.17, 0]}>
+        <cylinderGeometry args={[0.03, 0.03, 0.014, 20]} />
+        <meshStandardMaterial {...ALUMINUM_JOINT} />
+      </mesh>
+
+      {/* Horizontal arm */}
+      <mesh position={[0, 0.25, 0.05]} rotation={[0.22, 0, 0]}>
+        <boxGeometry args={[0.036, 0.032, 0.11]} />
+        <meshStandardMaterial {...ALUMINUM_DARK} />
+      </mesh>
+
+      {/* Arm-to-tray joint */}
+      <mesh position={[0, 0.28, 0.1]}>
+        <cylinderGeometry args={[0.02, 0.02, 0.022, 16]} />
+        <meshStandardMaterial {...ALUMINUM_JOINT} />
+      </mesh>
+
+      {/* Laptop tray */}
+      <RoundedBox args={[0.28, 0.008, 0.18]} radius={0.004} position={[0, 0.294, 0.1]}>
+        <meshStandardMaterial {...ALUMINUM_DARK} />
+      </RoundedBox>
+
+      {/* ── Laptop ────────────────────────────────────────────── */}
+      <group position={[0, 0.304, 0.1]}>
+        {/* Rubber feet */}
+        {[[-0.12, 0.07], [0.12, 0.07], [-0.12, -0.07], [0.12, -0.07]].map(([x, z], i) => (
+          <mesh key={i} position={[x, 0.003, z]}>
+            <cylinderGeometry args={[0.008, 0.008, 0.004, 8]} />
+            <meshStandardMaterial color="#222" roughness={0.85} />
           </mesh>
-          {/* trackpad */}
-          <mesh position={[0, 0.011, -0.06]}>
-            <boxGeometry args={[0.08, 0.004, 0.05]} />
-            <meshStandardMaterial color="#c0c4c8" roughness={0.3} metalness={0.5} />
+        ))}
+
+        {/* Bottom case */}
+        <group position={[0, 0.012, 0]} rotation={[-0.06, 0, 0]}>
+          {/* Unibody shell */}
+          <RoundedBox args={[0.3, 0.015, 0.21]} radius={0.005}>
+            <meshStandardMaterial {...ALUMINUM} />
+          </RoundedBox>
+
+          {/* Top deck inset */}
+          <mesh position={[0, 0.008, 0]}>
+            <boxGeometry args={[0.285, 0.002, 0.195]} />
+            <meshStandardMaterial color="#bbb" roughness={0.28} metalness={0.82} />
+          </mesh>
+
+          {/* Keyboard well */}
+          <mesh position={[0, 0.009, 0.04]}>
+            <boxGeometry args={[0.24, 0.004, 0.13]} />
+            <meshStandardMaterial color="#18191d" roughness={0.65} />
+          </mesh>
+
+          {/* Key rows */}
+          {[0.06, 0.042, 0.024, 0.006, -0.012, -0.03].map((z, i) => (
+            <mesh key={i} position={[0, 0.012, 0.04 + z]}>
+              <boxGeometry args={[0.22, 0.002, 0.013]} />
+              <meshStandardMaterial {...KEYCAP} />
+            </mesh>
+          ))}
+
+          {/* Spacebar */}
+          <mesh position={[0, 0.012, 0.02]}>
+            <boxGeometry args={[0.07, 0.002, 0.009]} />
+            <meshStandardMaterial {...KEYCAP} />
+          </mesh>
+
+          {/* Arrow cluster */}
+          {[[-0.08, -0.01], [-0.07, -0.02], [-0.09, -0.02]].map(([x, z], i) => (
+            <mesh key={`arr${i}`} position={[x, 0.012, 0.04 + z]}>
+              <boxGeometry args={[0.014, 0.002, 0.007]} />
+              <meshStandardMaterial {...KEYCAP} />
+            </mesh>
+          ))}
+
+          {/* Trackpad */}
+          <mesh position={[0, 0.009, -0.06]}>
+            <boxGeometry args={[0.1, 0.003, 0.06]} />
+            <meshStandardMaterial color="#c0c4c8" roughness={0.12} metalness={0.35} />
           </mesh>
         </group>
-        {/* screen (angled up from base) */}
-        <group position={[0, 0.33, -0.1]} rotation={[0.55, 0, 0]}>
-          <RoundedBox args={[0.3, 0.2, 0.012]} radius={0.004}>
-            <meshStandardMaterial color="#1c1c20" roughness={0.4} />
+
+        {/* ── Hinge ──────────────────────────────────────── */}
+        <mesh position={[0, 0.018, -0.09]} rotation={[0, 0, Math.PI / 2]}>
+          <cylinderGeometry args={[0.009, 0.009, 0.25, 12]} />
+          <meshStandardMaterial color="#3a3a40" roughness={0.4} metalness={0.45} />
+        </mesh>
+        <mesh position={[0, 0.022, -0.09]} rotation={[0, 0, Math.PI / 2]}>
+          <cylinderGeometry args={[0.007, 0.007, 0.23, 12]} />
+          <meshStandardMaterial color="#2a2a2f" roughness={0.3} metalness={0.55} />
+        </mesh>
+
+        {/* ── Screen / Lid ───────────────────────────────── */}
+        <group position={[0, 0.018, -0.09]} rotation={[1.08, 0, 0]}>
+          {/* Lid back cover */}
+          <RoundedBox args={[0.3, 0.21, 0.013]} radius={0.005}>
+            <meshStandardMaterial {...ALUMINUM} />
           </RoundedBox>
-          {/* screen glow */}
-          <mesh position={[0, 0, 0.008]}>
-            <planeGeometry args={[0.27, 0.17]} />
-            <meshStandardMaterial
-              color="#0d1714"
-              emissive="#7a6fd0"
-              emissiveIntensity={0.6}
-              roughness={0.3}
-            />
+
+          {/* Bezel frame */}
+          <RoundedBox args={[0.285, 0.195, 0.005]} radius={0.003} position={[0, 0, 0.01]}>
+            <meshStandardMaterial {...ANTHRACITE} />
+          </RoundedBox>
+
+          {/* Screen panel */}
+          <mesh position={[0, 0, 0.014]}>
+            <planeGeometry args={[0.26, 0.17]} />
+            <meshBasicMaterial map={screenTex} toneMapped={false} />
+          </mesh>
+
+          {/* Webcam dot */}
+          <mesh position={[0, 0.095, 0.017]}>
+            <cylinderGeometry args={[0.003, 0.003, 0.001, 8]} />
+            <meshStandardMaterial color="#0a0a0f" roughness={0.5} />
           </mesh>
         </group>
       </group>
+    </group>
   );
 }
 
