@@ -78,8 +78,9 @@ function fadeWalls(
       if (!mat.transparent) mat.transparent = true;
       const target = behind ? 0.2 : 1;
       mat.opacity += (target - mat.opacity) * 0.15;
+      // NB: opacity/depthWrite/transparent are render-state — setting
+      // material.needsUpdate here would force a shader recompile every frame.
       mat.depthWrite = mat.opacity > 0.95;
-      mat.needsUpdate = true;
     }
   });
 }
