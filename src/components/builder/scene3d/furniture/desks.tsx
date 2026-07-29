@@ -23,39 +23,6 @@ export function DeskModel({ id }: { id: string }) {
   );
 }
 
-/** Electrical Adjustable Desk — black top, T-legs (monis' hero product) */
-function StandingDesk() {
-  return (
-    <group>
-      <RoundedBox
-        args={[1.8, 0.04, 0.7]}
-        radius={0.01}
-        creaseAngle={0.02}
-        position={[DESK_CENTER[0], DESK_TOP_Y - 0.02, DESK_CENTER[2]]}
-      >
-        <meshStandardMaterial color="#202024" roughness={0.5} />
-      </RoundedBox>
-      {[-0.55, 0.55].map((dx) => (
-        <group key={dx} position={[DESK_CENTER[0] + dx, 0, DESK_CENTER[2]]}>
-          <mesh position={[0, 0.345, 0]}>
-            <boxGeometry args={[0.07, 0.69, 0.07]} />
-            <meshStandardMaterial color="#26262b" roughness={0.5} />
-          </mesh>
-          <mesh position={[0, 0.015, 0]}>
-            <boxGeometry args={[0.07, 0.03, 0.55]} />
-            <meshStandardMaterial color="#26262b" roughness={0.5} />
-          </mesh>
-        </group>
-      ))}
-      {/* controller */}
-      <mesh position={[DESK_CENTER[0] + 0.42, DESK_TOP_Y - 0.05, DESK_CENTER[2] + 0.3]}>
-        <boxGeometry args={[0.12, 0.02, 0.06]} />
-        <meshStandardMaterial color="#3a3a40" roughness={0.5} />
-      </mesh>
-    </group>
-  );
-}
-
 /** Motorized Standing Desk Pro — premium dual-motor with digital display, grommets, side basket */
 function MotorizedStandingDesk() {
   return (

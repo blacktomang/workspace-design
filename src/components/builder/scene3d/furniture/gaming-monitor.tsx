@@ -2,7 +2,7 @@
 
 import { Suspense, useEffect, useMemo } from "react";
 import * as THREE from "three";
-import { useTexture, useVideoTexture } from "@react-three/drei";
+import { useVideoTexture } from "@react-three/drei";
 import { RoundedBoxGeometry } from "three/examples/jsm/geometries/RoundedBoxGeometry.js";
 import { DecalGeometry } from "three/examples/jsm/geometries/DecalGeometry.js";
 
@@ -717,9 +717,12 @@ function disposeObject(root: THREE.Object3D) {
 function GamingMonitorInner({ accent }: { accent: string }) {
   
   const wallpaper = useVideoTexture("/ads.mp4");
-  wallpaper.colorSpace = THREE.SRGBColorSpace;
 
-  const model = useMemo(() => buildMonitor(wallpaper, accent), [wallpaper, accent]);
+  const model = useMemo(() => {
+    const tex = wallpaper.clone();
+    tex.colorSpace = THREE.SRGBColorSpace;
+    return buildMonitor(tex, accent);
+  }, [wallpaper, accent]);
 
   useEffect(() => () => disposeObject(model), [model]);
 
