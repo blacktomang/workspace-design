@@ -1,36 +1,33 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# monis.rent Workspace Designer
 
-## Getting Started
+Interactive 3D "design your workspace" builder for [monis.rent](https://monis.rent) — Bali office-gear rental. Pick a desk, chair, monitor and extras in a live 3D room, then send the setup to monis.rent via WhatsApp to rent it weekly.
 
-First, run the development server:
+## Stack
+
+Next.js 16 (App Router, Turbopack) · React 19 · Tailwind CSS v4 · react-three-fiber + drei · zustand (persisted) · GSAP camera transitions.
+
+## Commands
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm run dev    # dev server
+npm run build  # production build
+npm run lint   # eslint (flat config)
+npx tsc --noEmit
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Environment
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Copy `.env.example` to `.env.local`:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- `NEXT_PUBLIC_MONIS_WHATSAPP` — monis.rent's WhatsApp number (international format, no `+`). Defaults to a placeholder.
 
-## Learn More
+## How it's organized
 
-To learn more about Next.js, take a look at the following resources:
+- `src/lib/products.ts` — the catalog: single source of truth for products, prices (USD/week) and monitor IDs (`MONITOR_IDS`, `isMonitorId`).
+- `src/lib/store/workspace-store.ts` — zustand store, persisted to localStorage (`monis-workspace`, versioned + migrated). UI-only state (fullscreen, camera) is not persisted.
+- `src/components/builder/scene3d/` — three.js scene, loaded client-only via `next/dynamic(..., { ssr: false })`.
+- `src/components/builder/scene/` — SVG fallback scene for no-WebGL / canvas crash. Both scenes switch on the same product IDs from the catalog.
+- `src/components/builder/catalog/` — catalog card components (select / accessory / monitor / poster).
+- Checkout (`/checkout`) summarizes the setup and deep-links to WhatsApp.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Deploy target: Vercel.

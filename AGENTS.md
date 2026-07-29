@@ -17,9 +17,9 @@ Interactive 3D "design your workspace" builder for monis.rent (Bali office-gear 
 ## Traps (learned the hard way)
 
 - **Hydration**: zustand `persist` rehydrates from localStorage synchronously on the client, so any component rendering persisted state will SSR/CSR-mismatch. Gate on `useHydrated()` (`src/hooks/use-hydrated.ts`) and render a skeleton first — see `builder-experience.tsx` / `checkout-summary.tsx`.
-- **Store versioning**: persisted under key `monis-workspace` with `version: 1`. When product IDs or state shape change, bump `version`, or old persisted IDs silently no-op against the new catalog.
+- **Store versioning**: persisted under key `monis-workspace` with `version: 2` (has a `migrate` that normalizes monitor state). When product IDs or state shape change, bump `version` and extend the migration, or old persisted IDs silently no-op against the new catalog.
 - **three.js boundary**: all `three`/R3F imports must stay inside `src/components/builder/scene3d/` behind `next/dynamic(..., { ssr: false })` in `workspace-canvas.tsx`. `ssr: false` is illegal in Server Components — the wrapper is a client component; never import three from a server module.
-- **Two scenes, one catalog**: `scene3d/` (3D) and `scene/` (SVG WebGL fallback) both switch on product IDs from `src/lib/products.ts`. Adding/renaming a product ID means updating both `desks.tsx`/`chairs.tsx` pairs or the fallback renders the wrong variant.
+- **Two scenes, one catalog**: `scene3d/` (3D) and `scene/` (SVG WebGL fallback) both switch on product IDs from `src/lib/products.ts`. Adding/renaming a product ID means updating both `desks.tsx`/`chairs.tsx` pairs or the fallback renders the wrong variant. Monitor IDs must **never** be hardcoded — use `MONITOR_IDS` / `isMonitorId()` / `selectHasMonitor` (a stale `acc-monitor-34` reference once broke the fallback and lamp placement).
 - **ESLint `react-hooks/set-state-in-effect`**: sync `setState` inside effects errors. Set state only in async callbacks (see `poster.tsx` texture loading) or use the `useHydrated` `useSyncExternalStore` pattern.
 
 ## Conventions
