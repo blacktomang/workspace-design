@@ -2,8 +2,9 @@
 
 import { RoundedBox, useCursor } from "@react-three/drei";
 import type { ThreeEvent } from "@react-three/fiber";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
+import { fileToCompressedDataUrl } from "@/lib/image";
 import { useWorkspaceStore } from "@/lib/store/workspace-store";
 import { usePopIn } from "../use-pop-in";
 
@@ -36,6 +37,7 @@ export function Poster() {
   const setPosterImage = useWorkspaceStore((s) => s.setPosterImage);
   const [loaded, setLoaded] = useState<{ src: string; tex: THREE.Texture } | null>(null);
   const placeholder = useMemo(() => makePlaceholder(), []);
+  const textureRef = useRef<THREE.Texture | null>(null);
   const [hovered, setHovered] = useState(false);
   useCursor(hovered, "pointer", "auto");
 
@@ -59,6 +61,9 @@ export function Poster() {
         tex.offset.set(0, (1 - sy) / 2);
       }
       tex.needsUpdate = true;
+      // Free the previous upload's GPU texture before swapping.
+      textureRef.current?.dispose();
+      textureRef.current = tex;
       setLoaded({ src: posterImage, tex });
     };
     img.src = posterImage;
@@ -66,6 +71,15 @@ export function Poster() {
       cancelled = true;
     };
   }, [posterImage]);
+
+  // Release GPU textures on unmount.
+  useEffect(
+    () => () => {
+      textureRef.current?.dispose();
+      placeholder.dispose();
+    },
+    [placeholder]
+  );
 
   const map =
     posterImage && loaded?.src === posterImage ? loaded.tex : placeholder;
@@ -78,11 +92,13 @@ export function Poster() {
     input.onchange = () => {
       const file = input.files?.[0];
       if (!file) return;
-      const reader = new FileReader();
-      reader.onload = () => {
-        setPosterImage(reader.result as string);
-      };
-      reader.readAsDataURL(file);
+      // Same compression path as the catalog upload — raw dataURLs can
+      // exceed the localStorage quota once persisted.
+      fileToCompressedDataUrl(file)
+        .then(setPosterImage)
+        .catch(() => {
+          /* unreadable image — keep the current poster */
+        });
     };
     input.click();
   };
