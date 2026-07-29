@@ -1,6 +1,7 @@
 "use client";
 
-import { useMemo } from "react";
+import { useFrame, useThree } from "@react-three/fiber";
+import { useMemo, useRef } from "react";
 import * as THREE from "three";
 
 const WALL = "#f1eae0";
@@ -8,31 +9,26 @@ const BASEBOARD = "#e0d5c3";
 const FLOOR = "#cfa87c";
 const FRAME = "#f7f2e9";
 
-/** Paints the tropical view outside the window onto a canvas texture. */
 function makeWindowView() {
   const canvas = document.createElement("canvas");
   canvas.width = 256;
   canvas.height = 280;
   const ctx = canvas.getContext("2d")!;
 
-  // sky
   const sky = ctx.createLinearGradient(0, 0, 0, 200);
   sky.addColorStop(0, "#9fd6e8");
   sky.addColorStop(1, "#e8f6f3");
   ctx.fillStyle = sky;
   ctx.fillRect(0, 0, 256, 200);
 
-  // sun
   ctx.fillStyle = "#ffd27a";
   ctx.beginPath();
   ctx.arc(200, 52, 22, 0, Math.PI * 2);
   ctx.fill();
 
-  // sea
   ctx.fillStyle = "#7cc3cf";
   ctx.fillRect(0, 200, 256, 80);
 
-  // palm silhouettes
   ctx.strokeStyle = "#2e6b4f";
   ctx.lineWidth = 5;
   ctx.lineCap = "round";
@@ -68,12 +64,37 @@ function makeWindowView() {
   return tex;
 }
 
-/**
- * Dollhouse-style room: wooden floor, two cream walls (back wall has a
- * window with a tropical view), baseboards, a wall shelf, and a jute rug.
- */
+function fadeWalls(
+  groupRef: React.RefObject<THREE.Group | null>,
+  behind: boolean,
+) {
+  if (!groupRef.current) return;
+  groupRef.current.traverse((child) => {
+    if (
+      child instanceof THREE.Mesh &&
+      child.material instanceof THREE.MeshStandardMaterial
+    ) {
+      const mat = child.material;
+      if (!mat.transparent) mat.transparent = true;
+      const target = behind ? 0.2 : 1;
+      mat.opacity += (target - mat.opacity) * 0.15;
+      mat.depthWrite = mat.opacity > 0.95;
+      mat.needsUpdate = true;
+    }
+  });
+}
+
 export function Room() {
   const viewTexture = useMemo(() => makeWindowView(), []);
+  const { camera } = useThree();
+  const backWallsRef = useRef<THREE.Group>(null);
+  const leftWallRef = useRef<THREE.Group>(null);
+
+  useFrame(() => {
+    const cam = camera.position;
+    fadeWalls(backWallsRef, cam.z < -2.05);
+    fadeWalls(leftWallRef, cam.x < -2.55);
+  });
 
   return (
     <group>
@@ -84,35 +105,48 @@ export function Room() {
       </mesh>
 
       {/* back wall segments (window opening x -1.9..-0.7, y 0.7..2.0) */}
-      <mesh position={[-2.2, 1.3, -2.05]}>
-        <boxGeometry args={[0.6, 2.6, 0.1]} />
-        <meshStandardMaterial color={WALL} roughness={0.95} />
-      </mesh>
-      <mesh position={[0.9, 1.3, -2.05]}>
-        <boxGeometry args={[3.2, 2.6, 0.1]} />
-        <meshStandardMaterial color={WALL} roughness={0.95} />
-      </mesh>
-      <mesh position={[-1.3, 0.35, -2.05]}>
-        <boxGeometry args={[1.2, 0.7, 0.1]} />
-        <meshStandardMaterial color={WALL} roughness={0.95} />
-      </mesh>
-      <mesh position={[-1.3, 2.3, -2.05]}>
-        <boxGeometry args={[1.2, 0.6, 0.1]} />
-        <meshStandardMaterial color={WALL} roughness={0.95} />
-      </mesh>
+      <group ref={backWallsRef}>
+        <mesh position={[-2.2, 1.3, -2.05]}>
+          <boxGeometry args={[0.6, 2.6, 0.1]} />
+          <meshStandardMaterial color={WALL} roughness={0.95} />
+        </mesh>
+        <mesh position={[0.9, 1.3, -2.05]}>
+          <boxGeometry args={[3.2, 2.6, 0.1]} />
+          <meshStandardMaterial color={WALL} roughness={0.95} />
+        </mesh>
+        <mesh position={[-1.3, 0.35, -2.05]}>
+          <boxGeometry args={[1.2, 0.7, 0.1]} />
+          <meshStandardMaterial color={WALL} roughness={0.95} />
+        </mesh>
+        <mesh position={[-1.3, 2.3, -2.05]}>
+          <boxGeometry args={[1.2, 0.6, 0.1]} />
+          <meshStandardMaterial color={WALL} roughness={0.95} />
+        </mesh>
+        {/* back baseboard */}
+        <mesh position={[0, 0.04, -1.98]}>
+          <boxGeometry args={[5, 0.08, 0.02]} />
+          <meshStandardMaterial color={BASEBOARD} />
+        </mesh>
+      </group>
 
       {/* left wall */}
-      <mesh position={[-2.55, 1.3, -0.05]}>
-        <boxGeometry args={[0.1, 2.6, 4.1]} />
-        <meshStandardMaterial color={WALL} roughness={0.95} />
-      </mesh>
+      <group ref={leftWallRef}>
+        <mesh position={[-2.55, 1.3, -0.05]}>
+          <boxGeometry args={[0.1, 2.6, 4.1]} />
+          <meshStandardMaterial color={WALL} roughness={0.95} />
+        </mesh>
+        {/* left baseboard */}
+        <mesh position={[-2.48, 0.04, -0.05]}>
+          <boxGeometry args={[0.02, 0.08, 4.1]} />
+          <meshStandardMaterial color={BASEBOARD} />
+        </mesh>
+      </group>
 
       {/* window frame + view */}
       <mesh position={[-1.3, 1.35, -2.11]}>
         <planeGeometry args={[1.2, 1.3]} />
         <meshBasicMaterial map={viewTexture} />
       </mesh>
-      {/* frame border */}
       <mesh position={[-1.3, 2.02, -1.99]}>
         <boxGeometry args={[1.3, 0.05, 0.06]} />
         <meshStandardMaterial color={FRAME} />
@@ -144,17 +178,7 @@ export function Room() {
         <meshStandardMaterial color={FRAME} />
       </mesh>
 
-      {/* baseboards */}
-      <mesh position={[0, 0.04, -1.98]}>
-        <boxGeometry args={[5, 0.08, 0.02]} />
-        <meshStandardMaterial color={BASEBOARD} />
-      </mesh>
-      <mesh position={[-2.48, 0.04, -0.05]}>
-        <boxGeometry args={[0.02, 0.08, 4.1]} />
-        <meshStandardMaterial color={BASEBOARD} />
-      </mesh>
-
-      {/* wall shelf with little things */}
+      {/* wall shelf */}
       <group position={[-0.15, 1.62, -1.94]}>
         <mesh>
           <boxGeometry args={[1.1, 0.04, 0.22]} />
@@ -181,7 +205,6 @@ export function Room() {
           <meshStandardMaterial color="#e0d5c3" roughness={0.6} />
         </mesh>
       </group>
-
     </group>
   );
 }
