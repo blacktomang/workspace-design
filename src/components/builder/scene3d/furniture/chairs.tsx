@@ -1,25 +1,16 @@
 "use client";
 
 import { RoundedBox } from "@react-three/drei";
-import { CHAIRS, useWorkspaceStore } from "@/lib/store/workspace-store";
 import { usePopIn } from "../use-pop-in";
-import { Clickable } from "./clickable";
 import { DESK_CENTER } from "./desks";
 
 const CHAIR_POS: [number, number, number] = [DESK_CENTER[0], 0, DESK_CENTER[2] + 0.75];
 
 export function ChairModel({ id }: { id: string }) {
   const ref = usePopIn(id);
-  const setChair = useWorkspaceStore((s) => s.setChair);
-
-  const cycle = () => {
-    const idx = CHAIRS.findIndex((c) => c.id === id);
-    setChair(CHAIRS[(idx + 1) % CHAIRS.length].id);
-  };
 
   return (
-    <Clickable onSwap={cycle} label="chair">
-      <group ref={ref} position={CHAIR_POS} rotation={[0, Math.PI, 0]}>
+    <group ref={ref} position={CHAIR_POS} rotation={[0, Math.PI, 0]}>
         {id === "chair-task" ? (
           <TaskChair />
         ) : id === "chair-stool" ? (
@@ -28,7 +19,6 @@ export function ChairModel({ id }: { id: string }) {
           <ErgoChair />
         )}
       </group>
-    </Clickable>
   );
 }
 

@@ -5,7 +5,6 @@ import { useEffect, useMemo, useState } from "react";
 import * as THREE from "three";
 import { useWorkspaceStore } from "@/lib/store/workspace-store";
 import { usePopIn } from "../use-pop-in";
-import { Clickable } from "./clickable";
 
 const PLANE_W = 0.64;
 const PLANE_H = 0.84;
@@ -70,21 +69,15 @@ export function Poster() {
   const map =
     posterImage && loaded?.src === posterImage ? loaded.tex : placeholder;
 
-  const openPicker = () => {
-    document.getElementById("poster-file-input")?.click();
-  };
-
   return (
-    <Clickable onSwap={openPicker} label="poster">
-      <group ref={ref} position={[1.45, 1.55, -1.98]}>
-        <RoundedBox args={[0.72, 0.92, 0.03]} radius={0.008}>
-          <meshStandardMaterial color="#1f1f22" roughness={0.5} />
-        </RoundedBox>
-        <mesh position={[0, 0, 0.017]}>
-          <planeGeometry args={[PLANE_W, PLANE_H]} />
-          <meshBasicMaterial map={map} toneMapped={false} />
-        </mesh>
-      </group>
-    </Clickable>
+    <group ref={ref} position={[1.45, 1.55, -1.98]}>
+      <RoundedBox args={[0.72, 0.92, 0.03]} radius={0.008}>
+        <meshStandardMaterial color="#1f1f22" roughness={0.5} />
+      </RoundedBox>
+      <mesh position={[0, 0, 0.017]}>
+        <planeGeometry args={[PLANE_W, PLANE_H]} />
+        <meshBasicMaterial map={map} toneMapped={false} />
+      </mesh>
+    </group>
   );
 }

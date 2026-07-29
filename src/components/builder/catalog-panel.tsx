@@ -21,15 +21,17 @@ import {
   ACCESSORIES,
   CHAIRS,
   DESKS,
+  getProduct,
   type Category,
   type Product,
 } from "@/lib/products";
-import { useWorkspaceStore } from "@/lib/store/workspace-store";
+import { MONITOR_IDS, useWorkspaceStore } from "@/lib/store/workspace-store";
 import { cn, formatUSD } from "@/lib/utils";
 
-const TABS: { id: Category; label: string; icon: LucideIcon }[] = [
+const TABS: { id: Category | "monitor"; label: string; icon: LucideIcon }[] = [
   { id: "desk", label: "Desks", icon: Table2 },
   { id: "chair", label: "Chairs", icon: Armchair },
+  { id: "monitor", label: "Monitors", icon: Monitor },
   { id: "accessory", label: "Extras", icon: Sparkles },
 ];
 
@@ -50,11 +52,11 @@ const CATEGORY_ITEMS: Record<Category, Product[]> = {
 };
 
 export function CatalogPanel() {
-  const [tab, setTab] = useState<Category>("desk");
+  const [tab, setTab] = useState<Category | "monitor">("desk");
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="grid grid-cols-3 gap-1 rounded-full bg-muted p-1">
+      <div className="grid grid-cols-4 gap-1 rounded-full bg-muted p-1">
         {TABS.map(({ id, label, icon: Icon }) => (
           <button
             key={id}
@@ -73,12 +75,24 @@ export function CatalogPanel() {
         ))}
       </div>
 
-      <div key={tab} className="flex animate-fade-up flex-col gap-2.5">
-        {tab === "accessory"
-          ? ACCESSORIES.map((p) => <AccessoryCard key={p.id} product={p} />)
-          : CATEGORY_ITEMS[tab].map((p) => (
+      <div className="overflow-y-auto max-h-[calc(100vh-320px)] min-h-0 pb-2">
+        <div key={tab} className="flex animate-fade-up flex-col gap-2.5">
+          {tab === "monitor" ? (
+            <>
+              {MONITOR_IDS.map((id) => {
+                const product = getProduct(id);
+                if (!product) return null;
+                return <MonitorInfoCard key={id} product={product} />;
+              })}
+            </>
+          ) : tab === "accessory" ? (
+            ACCESSORIES.map((p) => <AccessoryCard key={p.id} product={p} />)
+          ) : (
+            CATEGORY_ITEMS[tab].map((p) => (
               <SelectCard key={p.id} product={p} />
-            ))}
+            ))
+          )}
+        </div>
       </div>
     </div>
   );
@@ -148,9 +162,9 @@ function AccessoryCard({ product }: { product: Product }) {
     return <PosterCard product={product} qty={qty} />;
   }
 
-  // Monitors: show as a selectable type card (cycle between 27" and 49" gaming)
+  // Monitors are shown in their own tab — skip in Extras
   if (product.id === "acc-monitor-27" || product.id === "acc-monitor-49-gaming") {
-    return <MonitorCard product={product} />;
+    return null;
   }
 
   const max = product.maxQty ?? 99;
@@ -208,8 +222,8 @@ function AccessoryCard({ product }: { product: Product }) {
   );
 }
 
-/** Monitor card: click to toggle on/off, and cycle between 27" and 49" gaming types. */
-function MonitorCard({ product }: { product: Product }) {
+/** Selectable monitor card — click to switch monitor type. */
+function MonitorInfoCard({ product }: { product: Product }) {
   const monitorId = useWorkspaceStore((s) => s.monitorId);
   const accessories = useWorkspaceStore((s) => s.accessories);
   const setMonitor = useWorkspaceStore((s) => s.setMonitor);
@@ -219,18 +233,13 @@ function MonitorCard({ product }: { product: Product }) {
   const hasMonitor =
     (accessories["acc-monitor-27"] ?? 0) + (accessories["acc-monitor-49-gaming"] ?? 0) > 0;
   const isSelected = hasMonitor && monitorId === product.id;
-  const Icon = Monitor;
+  const Icon = ACCESSORY_ICONS[product.id] ?? Monitor;
 
   const handleClick = () => {
     if (!hasMonitor) {
-      // Turn on: add current product and set as selected
       addAccessory(product.id);
       setMonitor(product.id);
-    } else if (monitorId === product.id) {
-      // Turn off
-      removeAccessory(monitorId);
-    } else {
-      // Switch type
+    } else if (monitorId !== product.id) {
       removeAccessory(monitorId);
       addAccessory(product.id);
       setMonitor(product.id);
@@ -246,9 +255,7 @@ function MonitorCard({ product }: { product: Product }) {
         "group flex w-full items-start gap-3 rounded-xl border p-3 text-left transition-all",
         isSelected
           ? "border-primary bg-primary/5 ring-2 ring-primary/15"
-          : hasMonitor
-            ? "border-border bg-card opacity-60"
-            : "border-border bg-card hover:border-primary/40 hover:bg-muted/50"
+          : "border-border bg-card hover:border-primary/40 hover:bg-muted/50"
       )}
     >
       <span

@@ -1,33 +1,24 @@
 "use client";
 
 import { RoundedBox } from "@react-three/drei";
-import { MONITOR_IDS, useWorkspaceStore } from "@/lib/store/workspace-store";
+import { useWorkspaceStore } from "@/lib/store/workspace-store";
 import { usePopIn } from "../use-pop-in";
 import { DESK_CENTER, DESK_TOP_Y } from "./desks";
-import { Clickable } from "./clickable";
 import { GamingMonitorModel } from "./gaming-monitor";
 
 const SCREEN_COLORS = ["#46b39a", "#ff0055"];
 
-/** Single monitor positioned at desk center; cycles between 27" and 49" gaming types. */
+/** Single monitor positioned at desk center. */
 export function Monitors({ id }: { id: string }) {
-  const setMonitor = useWorkspaceStore((s) => s.setMonitor);
-  const cycle = () => {
-    const idx = MONITOR_IDS.indexOf(id as typeof MONITOR_IDS[number]);
-    setMonitor(MONITOR_IDS[(idx + 1) % MONITOR_IDS.length]);
-  };
-
   const isGamingUltraWide = id === "acc-monitor-49-gaming";
 
   return (
-    <Clickable onSwap={cycle} label="monitor">
-      <MonitorModel
-        position={[DESK_CENTER[0], DESK_TOP_Y, DESK_CENTER[2] - 0.12]}
-        accent={isGamingUltraWide ? SCREEN_COLORS[1] : SCREEN_COLORS[0]}
-        ultrawide={isGamingUltraWide}
-        gaming={isGamingUltraWide}
-      />
-    </Clickable>
+    <MonitorModel
+      position={[DESK_CENTER[0], DESK_TOP_Y, DESK_CENTER[2] - 0.12]}
+      accent={isGamingUltraWide ? SCREEN_COLORS[1] : SCREEN_COLORS[0]}
+      ultrawide={isGamingUltraWide}
+      gaming={isGamingUltraWide}
+    />
   );
 }
 
@@ -92,7 +83,6 @@ function MonitorModel({
 /** Tall LED bar lamp — light shines over the monitor screen. */
 export function Lamp() {
   const ref = usePopIn("lamp");
-  const removeAccessory = useWorkspaceStore((s) => s.removeAccessory);
   const hasMonitor = useWorkspaceStore(
     (s) => (s.accessories["acc-monitor-27"] ?? 0) + (s.accessories["acc-monitor-34"] ?? 0) > 0
   );
@@ -101,8 +91,7 @@ export function Lamp() {
   const lampX = hasMonitor ? DESK_CENTER[0] + 0.62 : DESK_CENTER[0] + 0.68;
 
   return (
-    <Clickable onSwap={() => removeAccessory("acc-lamp")} label="lamp">
-      <group ref={ref} position={[lampX, DESK_TOP_Y, DESK_CENTER[2] - 0.12]}>
+    <group ref={ref} position={[lampX, DESK_TOP_Y, DESK_CENTER[2] - 0.12]}>
         <mesh position={[0, 0.01, 0]}>
           <cylinderGeometry args={[0.07, 0.075, 0.02, 24]} />
           <meshStandardMaterial color="#26262b" roughness={0.4} />
@@ -132,18 +121,15 @@ export function Lamp() {
           color="#ffd489"
         />
       </group>
-    </Clickable>
   );
 }
 
 /** Ergonomic laptop stand with an open laptop on it. */
 export function LaptopStand() {
   const ref = usePopIn("laptop-stand");
-  const removeAccessory = useWorkspaceStore((s) => s.removeAccessory);
 
   return (
-    <Clickable onSwap={() => removeAccessory("acc-laptop-stand")} label="laptop stand">
-      <group ref={ref} position={[DESK_CENTER[0] - 0.7, DESK_TOP_Y, DESK_CENTER[2] + 0.18]}>
+    <group ref={ref} position={[DESK_CENTER[0] - 0.7, DESK_TOP_Y, DESK_CENTER[2] + 0.18]}>
         {/* stand base */}
         <RoundedBox args={[0.28, 0.015, 0.22]} radius={0.005} position={[0, 0.008, 0]}>
           <meshStandardMaterial color="#8a939a" roughness={0.5} metalness={0.6} />
@@ -186,17 +172,14 @@ export function LaptopStand() {
           </mesh>
         </group>
       </group>
-    </Clickable>
   );
 }
 
 /** Wireless keyboard + mouse + the mandatory coffee mug */
 export function KeyboardSet() {
   const ref = usePopIn("keyboard");
-  const removeAccessory = useWorkspaceStore((s) => s.removeAccessory);
   return (
-    <Clickable onSwap={() => removeAccessory("acc-keyboard")} label="keyboard">
-      <group ref={ref} position={[DESK_CENTER[0], DESK_TOP_Y, DESK_CENTER[2] + 0.28]}>
+    <group ref={ref} position={[DESK_CENTER[0], DESK_TOP_Y, DESK_CENTER[2] + 0.28]}>
         <RoundedBox args={[0.36, 0.018, 0.12]} radius={0.006} position={[0, 0.01, 0]}>
           <meshStandardMaterial color="#26262b" roughness={0.5} />
         </RoundedBox>
@@ -219,6 +202,5 @@ export function KeyboardSet() {
           </mesh>
         </group>
       </group>
-    </Clickable>
   );
 }

@@ -1,26 +1,17 @@
 "use client";
 
 import { RoundedBox } from "@react-three/drei";
-import { DESKS, useWorkspaceStore } from "@/lib/store/workspace-store";
 import { usePopIn } from "../use-pop-in";
-import { Clickable } from "./clickable";
 
 export const DESK_TOP_Y = 0.73;
 export const DESK_CENTER: [number, number, number] = [0.2, 0, -1.65];
 
-/** Desk that swaps variant with a pop animation; click cycles options. */
+/** Desk that swaps variant with a pop animation. */
 export function DeskModel({ id }: { id: string }) {
   const ref = usePopIn(id);
-  const setDesk = useWorkspaceStore((s) => s.setDesk);
-
-  const cycle = () => {
-    const idx = DESKS.findIndex((d) => d.id === id);
-    setDesk(DESKS[(idx + 1) % DESKS.length].id);
-  };
 
   return (
-    <Clickable onSwap={cycle} label="desk">
-      <group ref={ref}>
+    <group ref={ref}>
         {id === "desk-standing" ? (
           <MotorizedStandingDesk />
         ) : id === "desk-compact" ? (
@@ -29,7 +20,6 @@ export function DeskModel({ id }: { id: string }) {
           <WoodDesk />
         )}
       </group>
-    </Clickable>
   );
 }
 
