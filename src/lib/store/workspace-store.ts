@@ -40,7 +40,7 @@ const DEFAULT_STATE = {
   deskId: DESKS[0].id,
   chairId: CHAIRS[0].id,
   monitorId: MONITOR_IDS[1],
-  accessories: {} as Record<string, number>,
+  accessories: { "acc-monitor-49-gaming": 1 } as Record<string, number>,
   posterImage: null as string | null,
   isFullscreen: false,
   cameraMode: "orbit" as "orbit" | "inroom",
