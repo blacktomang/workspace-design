@@ -283,14 +283,14 @@ export function LaptopStand() {
       </mesh>
 
       {/* Laptop tray */}
-      <RoundedBox args={[0.28, 0.008, 0.18]} radius={0.004} position={[0, 0.294, 0.1]}>
+      <RoundedBox args={[0.32, 0.008, 0.18]} radius={0.004} position={[0, 0.294, 0.1]}>
         <meshStandardMaterial {...ALUMINUM_DARK} />
       </RoundedBox>
 
       {/* ── Laptop ────────────────────────────────────────────── */}
       <group position={[0, 0.304, 0.1]}>
         {/* Rubber feet */}
-        {[[-0.12, 0.07], [0.12, 0.07], [-0.12, -0.07], [0.12, -0.07]].map(([x, z], i) => (
+        {[[-0.14, 0.07], [0.14, 0.07], [-0.14, -0.07], [0.14, -0.07]].map(([x, z], i) => (
           <mesh key={i} position={[x, 0.003, z]}>
             <cylinderGeometry args={[0.008, 0.008, 0.004, 8]} />
             <meshStandardMaterial color="#222" roughness={0.85} />
@@ -300,38 +300,38 @@ export function LaptopStand() {
         {/* Bottom case */}
         <group position={[0, 0.012, 0]} rotation={[-0.06, 0, 0]}>
           {/* Unibody shell */}
-          <RoundedBox args={[0.3, 0.015, 0.21]} radius={0.005}>
+          <RoundedBox args={[0.34, 0.016, 0.21]} radius={0.005}>
             <meshStandardMaterial {...ALUMINUM} />
           </RoundedBox>
 
           {/* Top deck inset */}
           <mesh position={[0, 0.008, 0]}>
-            <boxGeometry args={[0.285, 0.002, 0.195]} />
+            <boxGeometry args={[0.325, 0.002, 0.195]} />
             <meshStandardMaterial color="#bbb" roughness={0.28} metalness={0.82} />
           </mesh>
 
           {/* Keyboard well */}
           <mesh position={[0, 0.009, 0.04]}>
-            <boxGeometry args={[0.24, 0.004, 0.13]} />
+            <boxGeometry args={[0.27, 0.004, 0.13]} />
             <meshStandardMaterial color="#18191d" roughness={0.65} />
           </mesh>
 
           {/* Key rows */}
           {[0.06, 0.042, 0.024, 0.006, -0.012, -0.03].map((z, i) => (
             <mesh key={i} position={[0, 0.012, 0.04 + z]}>
-              <boxGeometry args={[0.22, 0.002, 0.013]} />
+              <boxGeometry args={[0.25, 0.002, 0.013]} />
               <meshStandardMaterial {...KEYCAP} />
             </mesh>
           ))}
 
           {/* Spacebar */}
           <mesh position={[0, 0.012, 0.02]}>
-            <boxGeometry args={[0.07, 0.002, 0.009]} />
+            <boxGeometry args={[0.08, 0.002, 0.009]} />
             <meshStandardMaterial {...KEYCAP} />
           </mesh>
 
           {/* Arrow cluster */}
-          {[[-0.08, -0.01], [-0.07, -0.02], [-0.09, -0.02]].map(([x, z], i) => (
+          {[[-0.09, -0.01], [-0.08, -0.02], [-0.1, -0.02]].map(([x, z], i) => (
             <mesh key={`arr${i}`} position={[x, 0.012, 0.04 + z]}>
               <boxGeometry args={[0.014, 0.002, 0.007]} />
               <meshStandardMaterial {...KEYCAP} />
@@ -347,34 +347,34 @@ export function LaptopStand() {
 
         {/* ── Hinge ──────────────────────────────────────── */}
         <mesh position={[0, 0.018, -0.09]} rotation={[0, 0, Math.PI / 2]}>
-          <cylinderGeometry args={[0.009, 0.009, 0.25, 12]} />
+          <cylinderGeometry args={[0.009, 0.009, 0.29, 12]} />
           <meshStandardMaterial color="#3a3a40" roughness={0.4} metalness={0.45} />
         </mesh>
         <mesh position={[0, 0.022, -0.09]} rotation={[0, 0, Math.PI / 2]}>
-          <cylinderGeometry args={[0.007, 0.007, 0.23, 12]} />
+          <cylinderGeometry args={[0.007, 0.007, 0.27, 12]} />
           <meshStandardMaterial color="#2a2a2f" roughness={0.3} metalness={0.55} />
         </mesh>
 
         {/* ── Screen / Lid ───────────────────────────────── */}
-        <group position={[0, 0.018, -0.09]} rotation={[1.08, 0, 0]}>
+        <group position={[0, 0.018, -0.09]} rotation={[Math.PI / 2, 0, 0]}>
           {/* Lid back cover */}
-          <RoundedBox args={[0.3, 0.21, 0.013]} radius={0.005}>
+          <RoundedBox args={[0.34, 0.23, 0.014]} radius={0.005}>
             <meshStandardMaterial {...ALUMINUM} />
           </RoundedBox>
 
           {/* Bezel frame */}
-          <RoundedBox args={[0.285, 0.195, 0.005]} radius={0.003} position={[0, 0, 0.01]}>
+          <RoundedBox args={[0.32, 0.215, 0.005]} radius={0.003} position={[0, 0, 0.01]}>
             <meshStandardMaterial {...ANTHRACITE} />
           </RoundedBox>
 
           {/* Screen panel */}
           <mesh position={[0, 0, 0.014]}>
-            <planeGeometry args={[0.26, 0.17]} />
+            <planeGeometry args={[0.3, 0.19]} />
             <meshBasicMaterial map={screenTex} toneMapped={false} />
           </mesh>
 
           {/* Webcam dot */}
-          <mesh position={[0, 0.095, 0.017]}>
+          <mesh position={[0, 0.105, 0.017]}>
             <cylinderGeometry args={[0.003, 0.003, 0.001, 8]} />
             <meshStandardMaterial color="#0a0a0f" roughness={0.5} />
           </mesh>
