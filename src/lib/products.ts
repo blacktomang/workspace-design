@@ -123,3 +123,21 @@ export const CATALOG: Product[] = [...DESKS, ...CHAIRS, ...ACCESSORIES];
 export function getProduct(id: string) {
   return CATALOG.find((p) => p.id === id);
 }
+
+/**
+ * Monitor accessory IDs — the single source of truth. Monitors are
+ * accessories with special handling (exactly one at a time, tracked via
+ * `monitorId` in the store). Never hardcode these strings elsewhere.
+ */
+export const MONITOR_IDS = ["acc-monitor-27", "acc-monitor-49-gaming"] as const;
+
+export type MonitorId = (typeof MONITOR_IDS)[number];
+
+export function isMonitorId(id: string): id is MonitorId {
+  return (MONITOR_IDS as readonly string[]).includes(id);
+}
+
+/** True when any monitor accessory is present in the accessories map. */
+export function hasMonitorAccessory(accessories: Record<string, number>) {
+  return MONITOR_IDS.some((id) => (accessories[id] ?? 0) > 0);
+}
