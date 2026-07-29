@@ -3,7 +3,7 @@
 import { RoundedBox } from "@react-three/drei";
 import { useWorkspaceStore } from "@/lib/store/workspace-store";
 import { usePopIn } from "../use-pop-in";
-import { DESK_TOP_Y } from "./desks";
+import { DESK_CENTER, DESK_TOP_Y } from "./desks";
 import { Clickable } from "./clickable";
 
 const SCREEN_COLORS = ["#46b39a", "#e8913f", "#7a6fd0"];
@@ -33,7 +33,7 @@ export function Monitors({ count }: { count: number }) {
         {spots.map((s, i) => (
           <Monitor
             key={`${count}-${s.x}`}
-            position={[s.x, DESK_TOP_Y, -0.42]}
+            position={[s.x, DESK_TOP_Y, DESK_CENTER[2] - 0.12]}
             rotationY={s.ry}
             accent={SCREEN_COLORS[i % SCREEN_COLORS.length]}
             delay={i * 0.09}
@@ -91,7 +91,7 @@ export function Lamp() {
   const removeAccessory = useWorkspaceStore((s) => s.removeAccessory);
   return (
     <Clickable onSwap={() => removeAccessory("acc-lamp")} label="lamp">
-      <group ref={ref} position={[0.78, DESK_TOP_Y, -0.42]}>
+      <group ref={ref} position={[DESK_CENTER[0] + 0.58, DESK_TOP_Y, DESK_CENTER[2] - 0.12]}>
         <mesh position={[0, 0.01, 0]}>
           <cylinderGeometry args={[0.07, 0.075, 0.02, 24]} />
           <meshStandardMaterial color="#26262b" roughness={0.4} />
@@ -130,7 +130,7 @@ export function KeyboardSet() {
   const removeAccessory = useWorkspaceStore((s) => s.removeAccessory);
   return (
     <Clickable onSwap={() => removeAccessory("acc-keyboard")} label="keyboard">
-      <group ref={ref} position={[0.2, DESK_TOP_Y, -0.02]}>
+      <group ref={ref} position={[DESK_CENTER[0], DESK_TOP_Y, DESK_CENTER[2] + 0.28]}>
         <RoundedBox args={[0.36, 0.018, 0.12]} radius={0.006} position={[0, 0.01, 0]}>
           <meshStandardMaterial color="#26262b" roughness={0.5} />
         </RoundedBox>

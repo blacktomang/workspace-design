@@ -182,15 +182,6 @@ export function Room() {
         </mesh>
       </group>
 
-      {/* jute rug */}
-      <mesh position={[0.2, 0.012, 0.45]}>
-        <cylinderGeometry args={[1.25, 1.25, 0.024, 48]} />
-        <meshStandardMaterial color="#d8c6a5" roughness={1} />
-      </mesh>
-      <mesh position={[0.2, 0.026, 0.45]} rotation={[-Math.PI / 2, 0, 0]}>
-        <torusGeometry args={[1.05, 0.008, 8, 64]} />
-        <meshStandardMaterial color="#c4ae8a" roughness={1} />
-      </mesh>
     </group>
   );
 }

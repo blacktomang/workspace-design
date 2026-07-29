@@ -65,7 +65,7 @@ export function WorkspaceCanvas({ className }: { className?: string }) {
         className
       )}
     >
-      <div className="aspect-[900/620] w-full">
+      <div className="aspect-900/620 w-full">
         <SceneErrorBoundary fallback={<WorkspaceScene className="border-0" />}>
           <CanvasInner />
         </SceneErrorBoundary>

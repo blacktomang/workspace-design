@@ -6,6 +6,7 @@ import type { Group } from "three";
 import { useWorkspaceStore } from "@/lib/store/workspace-store";
 import { usePopIn } from "../use-pop-in";
 import { Clickable } from "./clickable";
+import { DESK_CENTER } from "./desks";
 
 const LEAF_COLORS = ["#3f7d4e", "#57a05e", "#4c8f57"];
 
@@ -24,7 +25,7 @@ export function Plant() {
 
   return (
     <Clickable onSwap={() => removeAccessory("acc-plant")} label="plant">
-      <group ref={popRef} position={[1.35, 0, -1.1]}>
+      <group ref={popRef} position={[DESK_CENTER[0] + 1.15, 0, DESK_CENTER[2] + 0.55]}>
         {/* pot */}
         <mesh position={[0, 0.13, 0]}>
           <cylinderGeometry args={[0.14, 0.11, 0.26, 24]} />

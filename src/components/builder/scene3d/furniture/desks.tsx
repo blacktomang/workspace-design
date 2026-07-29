@@ -6,7 +6,7 @@ import { usePopIn } from "../use-pop-in";
 import { Clickable } from "./clickable";
 
 export const DESK_TOP_Y = 0.73;
-export const DESK_CENTER: [number, number, number] = [0.2, 0, -0.3];
+export const DESK_CENTER: [number, number, number] = [0.2, 0, -1.65];
 
 /** Desk that swaps variant with a pop animation; click cycles options. */
 export function DeskModel({ id }: { id: string }) {
@@ -40,6 +40,7 @@ function StandingDesk() {
       <RoundedBox
         args={[1.4, 0.04, 0.7]}
         radius={0.01}
+        creaseAngle={0.02}
         position={[DESK_CENTER[0], DESK_TOP_Y - 0.02, DESK_CENTER[2]]}
       >
         <meshStandardMaterial color="#202024" roughness={0.5} />
@@ -57,7 +58,7 @@ function StandingDesk() {
         </group>
       ))}
       {/* controller */}
-      <mesh position={[0.62, DESK_TOP_Y - 0.05, 0.0]}>
+      <mesh position={[DESK_CENTER[0] + 0.42, DESK_TOP_Y - 0.05, DESK_CENTER[2] + 0.3]}>
         <boxGeometry args={[0.12, 0.02, 0.06]} />
         <meshStandardMaterial color="#3a3a40" roughness={0.5} />
       </mesh>
@@ -91,12 +92,12 @@ function WoodDesk() {
         </mesh>
       ))}
       {/* drawer unit */}
-      <mesh position={[0.62, 0.44, DESK_CENTER[2]]}>
+      <mesh position={[DESK_CENTER[0] + 0.42, 0.44, DESK_CENTER[2]]}>
         <boxGeometry args={[0.38, 0.5, 0.6]} />
         <meshStandardMaterial color="#b98a5f" roughness={0.7} />
       </mesh>
       {[0.52, 0.36].map((y) => (
-        <mesh key={y} position={[0.62, y, 0.006]}>
+        <mesh key={y} position={[DESK_CENTER[0] + 0.42, y, DESK_CENTER[2] + 0.306]}>
           <boxGeometry args={[0.22, 0.015, 0.012]} />
           <meshStandardMaterial color="#8a5a33" roughness={0.6} />
         </mesh>

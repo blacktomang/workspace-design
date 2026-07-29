@@ -4,8 +4,9 @@ import { RoundedBox } from "@react-three/drei";
 import { CHAIRS, useWorkspaceStore } from "@/lib/store/workspace-store";
 import { usePopIn } from "../use-pop-in";
 import { Clickable } from "./clickable";
+import { DESK_CENTER } from "./desks";
 
-const CHAIR_POS: [number, number, number] = [0.2, 0, 0.45];
+const CHAIR_POS: [number, number, number] = [DESK_CENTER[0], 0, DESK_CENTER[2] + 0.75];
 
 export function ChairModel({ id }: { id: string }) {
   const ref = usePopIn(id);
