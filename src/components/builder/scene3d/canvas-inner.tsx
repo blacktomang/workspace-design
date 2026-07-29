@@ -1,8 +1,10 @@
 "use client";
 
 import { ContactShadows, OrbitControls } from "@react-three/drei";
-import { Canvas } from "@react-three/fiber";
-import { useState } from "react";
+import { Canvas, useThree } from "@react-three/fiber";
+import gsap from "gsap";
+import { useEffect, useRef } from "react";
+import type { OrbitControls as OrbitControlsImpl } from "three-stdlib";
 import { useWorkspaceStore } from "@/lib/store/workspace-store";
 import { ChairModel } from "./furniture/chairs";
 import { DeskModel } from "./furniture/desks";
@@ -10,6 +12,83 @@ import { KeyboardSet, Lamp, LaptopStand, Monitors } from "./furniture/devices";
 import { Plant } from "./furniture/plant";
 import { Poster } from "./furniture/poster";
 import { Room } from "./room";
+
+const DEFAULT_CAMERA: [number, number, number] = [0.2, 1.5, 2.2];
+const DEFAULT_TARGET: [number, number, number] = [0.2, 0.9, -1.65];
+const INROOM_CAMERA: [number, number, number] = [0.2, 1.5, -0.95];
+const INROOM_TARGET: [number, number, number] = [0.2, 0.5, -1.65];
+
+/** Smooth GSAP camera transition between two positions/targets */
+function CameraController() {
+  const { camera } = useThree();
+  const cameraMode = useWorkspaceStore((s) => s.cameraMode);
+  const controlsRef = useRef<OrbitControlsImpl>(null);
+  const animating = useRef(false);
+
+  useEffect(() => {
+    if (animating.current) {
+      gsap.killTweensOf(camera.position);
+      gsap.killTweensOf(camera);
+    }
+    animating.current = true;
+
+    const toPos = cameraMode === "inroom" ? INROOM_CAMERA : DEFAULT_CAMERA;
+    const toTarget = cameraMode === "inroom" ? INROOM_TARGET : DEFAULT_TARGET;
+
+    gsap.to(camera.position, {
+      x: toPos[0],
+      y: toPos[1],
+      z: toPos[2],
+      duration: 0.3,
+      ease: "power2.inOut",
+      overwrite: true,
+      onComplete: () => {
+        animating.current = false;
+      },
+    });
+
+    if (controlsRef.current?.target) {
+      gsap.to(controlsRef.current.target, {
+        x: toTarget[0],
+        y: toTarget[1],
+        z: toTarget[2],
+        duration: 0.3,
+        ease: "power2.inOut",
+        overwrite: true,
+      });
+    }
+
+    const toFov = cameraMode === "inroom" ? 50 : 38;
+    gsap.to(camera, {
+      fov: toFov,
+      duration: 0.3,
+      ease: "power2.inOut",
+      overwrite: true,
+      onUpdate: () => {
+        camera.updateProjectionMatrix();
+      },
+    });
+  }, [cameraMode, camera]);
+
+  return (
+    <OrbitControls
+      ref={controlsRef}
+      makeDefault
+      target={DEFAULT_TARGET}
+      enablePan={false}
+      enableRotate={cameraMode !== "inroom"}
+      enableZoom={true}
+      minDistance={2.2}
+      maxDistance={7.5}
+      minPolarAngle={0.15}
+      maxPolarAngle={Math.PI / 2 - 0.04}
+      autoRotate={false}
+      autoRotateSpeed={0.7}
+      enableDamping
+      dampingFactor={0.08}
+    />
+  );
+}
 
 /**
  * The orbitable 3D workspace. Reads the shared zustand store, so it stays in
@@ -20,20 +99,29 @@ export default function CanvasInner() {
   const chairId = useWorkspaceStore((s) => s.chairId);
   const monitorId = useWorkspaceStore((s) => s.monitorId);
   const accessories = useWorkspaceStore((s) => s.accessories);
+  const isFullscreen = useWorkspaceStore((s) => s.isFullscreen);
+  const selectItem = useWorkspaceStore((s) => s.selectItem);
+  const selectedItem = useWorkspaceStore((s) => s.selectedItem);
 
-  const [interacted, setInteracted] = useState(false);
-
-  const hasMonitor = Object.keys(accessories).length > 0
+  const hasMonitor = (accessories["acc-monitor-27"] ?? 0) + (accessories["acc-monitor-49-gaming"] ?? 0) > 0;
   const hasLamp = (accessories["acc-lamp"] ?? 0) > 0;
   const hasPlant = (accessories["acc-plant"] ?? 0) > 0;
   const hasKeyboard = (accessories["acc-keyboard"] ?? 0) > 0;
   const hasPoster = (accessories["acc-poster"] ?? 0) > 0;
   const hasLaptopStand = (accessories["acc-laptop-stand"] ?? 0) > 0;
 
+  const handleClick = isFullscreen
+    ? {
+        desk: () => selectItem(selectedItem === "desk" ? undefined : "desk"),
+        chair: () => selectItem(selectedItem === "chair" ? undefined : "chair"),
+        monitor: () => selectItem(selectedItem === "monitor" ? undefined : "monitor"),
+      }
+    : { desk: () => {}, chair: () => {}, monitor: () => {} };
+
   return (
     <Canvas
       dpr={[1, 2]}
-      camera={{ position: [3.4, 2.3, 4.2], fov: 38 }}
+      camera={{ position: DEFAULT_CAMERA, fov: 38 }}
       gl={{ antialias: true, alpha: true }}
     >
       {/* soft warm interior lighting */}
@@ -43,9 +131,24 @@ export default function CanvasInner() {
       <ambientLight intensity={0.15} />
 
       <Room />
-      <DeskModel id={deskId} />
-      <ChairModel id={chairId} />
-      {hasMonitor && <Monitors id={monitorId} />}
+
+      {/* Desk — clickable in fullscreen */}
+      <group onClick={handleClick.desk}>
+        <DeskModel id={deskId} />
+      </group>
+
+      {/* Chair — clickable in fullscreen */}
+      <group onClick={handleClick.chair}>
+        <ChairModel id={chairId} />
+      </group>
+
+      {/* Monitor — clickable in fullscreen */}
+      {hasMonitor && (
+        <group onClick={handleClick.monitor}>
+          <Monitors id={monitorId} />
+        </group>
+      )}
+
       {hasLamp && <Lamp />}
       {hasKeyboard && <KeyboardSet />}
       {hasPlant && <Plant />}
@@ -61,20 +164,7 @@ export default function CanvasInner() {
         resolution={512}
       />
 
-      <OrbitControls
-        makeDefault
-        target={[0.2, 0.72, -0.1]}
-        enablePan={false}
-        minDistance={2.2}
-        maxDistance={7.5}
-        minPolarAngle={0.15}
-        maxPolarAngle={Math.PI / 2 - 0.04}
-        autoRotate={!interacted}
-        autoRotateSpeed={0.7}
-        enableDamping
-        dampingFactor={0.08}
-        onStart={() => setInteracted(true)}
-      />
+      <CameraController />
     </Canvas>
   );
 }

@@ -1,12 +1,57 @@
 "use client";
 
 import { RoundedBox } from "@react-three/drei";
+import { useMemo } from "react";
+import * as THREE from "three";
 import { useWorkspaceStore } from "@/lib/store/workspace-store";
 import { usePopIn } from "../use-pop-in";
 import { DESK_CENTER, DESK_TOP_Y } from "./desks";
 import { GamingMonitorModel } from "./gaming-monitor";
 
 const SCREEN_COLORS = ["#46b39a", "#ff0055"];
+
+function makeScreenTexture(accent: string) {
+  const canvas = document.createElement("canvas");
+  canvas.width = 512;
+  canvas.height = 283;
+  const ctx = canvas.getContext("2d")!;
+
+  // Background gradient
+  const g = ctx.createLinearGradient(0, 0, 512, 283);
+  g.addColorStop(0, accent);
+  g.addColorStop(1, "#1a3d34");
+  ctx.fillStyle = g;
+  ctx.fillRect(0, 0, 512, 283);
+
+  // Subtle grid pattern
+  ctx.strokeStyle = "rgba(255,255,255,0.04)";
+  ctx.lineWidth = 1;
+  for (let x = 0; x < 512; x += 32) {
+    ctx.beginPath();
+    ctx.moveTo(x, 0);
+    ctx.lineTo(x, 283);
+    ctx.stroke();
+  }
+  for (let y = 0; y < 283; y += 32) {
+    ctx.beginPath();
+    ctx.moveTo(0, y);
+    ctx.lineTo(512, y);
+    ctx.stroke();
+  }
+
+  // Brand text
+  ctx.fillStyle = "rgba(255,255,255,0.88)";
+  ctx.font = "600 52px system-ui, -apple-system, sans-serif";
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  ctx.fillText("monis.rent", 256, 142);
+
+  const tex = new THREE.CanvasTexture(canvas);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  tex.minFilter = THREE.LinearFilter;
+  tex.magFilter = THREE.LinearFilter;
+  return tex;
+}
 
 /** Single monitor positioned at desk center. */
 export function Monitors({ id }: { id: string }) {
@@ -38,6 +83,7 @@ function MonitorModel({
   const monitorWidth = ultrawide ? 0.78 : 0.58;
   const monitorHeight = ultrawide ? 0.28 : 0.32;
   const bezelThickness = 0.025;
+  const screenTex = useMemo(() => makeScreenTexture(accent), [accent]);
 
   if (gaming) {
     // Procedural curved ultra-wide gaming monitor (origin at base level)
@@ -64,17 +110,38 @@ function MonitorModel({
         {/* Screen panel - slightly inset */}
         <mesh position={[0, 0.52, 0.016]}>
           <planeGeometry args={[monitorWidth, monitorHeight]} />
-          <meshBasicMaterial color={accent} toneMapped={false} />
+          <meshBasicMaterial map={screenTex} toneMapped={false} />
         </mesh>
       </group>
 
       {/* Stand assembly */}
       <group>
-        {/* Standard: round base with curved neck */}
-        <mesh position={[0, 0.12, 0]}>
-          <boxGeometry args={[0.04, 0.22, 0.03]} />
+        {/* Circular base plate — sits flush on the desk */}
+        <mesh position={[0, 0.014, 0]}>
+          <cylinderGeometry args={[0.12, 0.125, 0.025, 32]} />
+          <meshStandardMaterial color="#1c1c20" roughness={0.35} metalness={0.15} />
+        </mesh>
+
+        {/* Neck column — connects base to VESA bracket */}
+        <mesh position={[0, 0.15, 0]}>
+          <boxGeometry args={[0.045, 0.28, 0.04]} />
           <meshStandardMaterial color="#1c1c20" roughness={0.4} />
         </mesh>
+
+        {/* Tilt/swivel joint at top of neck */}
+        <mesh position={[0, 0.295, 0]}>
+          <cylinderGeometry args={[0.028, 0.028, 0.025, 16]} />
+          <meshStandardMaterial color="#2a2a2f" roughness={0.3} metalness={0.3} />
+        </mesh>
+
+        {/* VESA mounting bracket on the back of the display */}
+        <RoundedBox
+          args={[0.1, 0.1, 0.015]}
+          radius={0.004}
+          position={[0, 0.33, -0.022]}
+        >
+          <meshStandardMaterial color="#2a2a2f" roughness={0.5} />
+        </RoundedBox>
       </group>
     </group>
   );

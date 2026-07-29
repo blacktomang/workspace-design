@@ -15,6 +15,13 @@ export interface WorkspaceState {
   accessories: Record<string, number>;
   /** dataURL of the user's uploaded poster image */
   posterImage: string | null;
+
+  /** Fullscreen + camera mode (UI-only, not persisted) */
+  isFullscreen: boolean;
+  cameraMode: "orbit" | "inroom";
+  selectedItem?: "desk" | "chair" | "monitor";
+  showItemPopup: boolean;
+
   setDesk: (id: string) => void;
   setChair: (id: string) => void;
   setMonitor: (id: string) => void;
@@ -23,6 +30,10 @@ export interface WorkspaceState {
   setAccessoryQty: (id: string, qty: number) => void;
   setPosterImage: (dataUrl: string | null) => void;
   reset: () => void;
+  setFullscreen: (enabled: boolean) => void;
+  setCameraMode: (mode: "orbit" | "inroom") => void;
+  selectItem: (itemType?: "desk" | "chair" | "monitor") => void;
+  setShowItemPopup: (show: boolean) => void;
 }
 
 const DEFAULT_STATE = {
@@ -31,6 +42,10 @@ const DEFAULT_STATE = {
   monitorId: MONITOR_IDS[0],
   accessories: {} as Record<string, number>,
   posterImage: null as string | null,
+  isFullscreen: false,
+  cameraMode: "orbit" as "orbit" | "inroom",
+  selectedItem: undefined as "desk" | "chair" | "monitor" | undefined,
+  showItemPopup: false,
 };
 
 export const useWorkspaceStore = create<WorkspaceState>()(
@@ -72,9 +87,23 @@ export const useWorkspaceStore = create<WorkspaceState>()(
               ? { ...s.accessories, "acc-poster": 1 }
               : s.accessories,
         })),
+      setFullscreen: (enabled) => set({ isFullscreen: enabled }),
+      setCameraMode: (mode) => set({ cameraMode: mode }),
+      selectItem: (itemType) => set({ selectedItem: itemType, showItemPopup: !!itemType }),
+      setShowItemPopup: (show) => set({ showItemPopup: show }),
       reset: () => set(DEFAULT_STATE),
     }),
-    { name: "monis-workspace", version: 1 }
+    {
+      name: "monis-workspace",
+      version: 1,
+      partialize: (state) => ({
+        deskId: state.deskId,
+        chairId: state.chairId,
+        monitorId: state.monitorId,
+        accessories: state.accessories,
+        posterImage: state.posterImage,
+      }),
+    }
   )
 );
 
