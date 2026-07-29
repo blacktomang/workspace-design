@@ -1,6 +1,6 @@
 "use client";
 
-import { useWorkspaceStore } from "@/lib/store/workspace-store";
+import { selectHasMonitor, useWorkspaceStore } from "@/lib/store/workspace-store";
 import { cn } from "@/lib/utils";
 import { Chair } from "./chairs";
 import { Desk } from "./desks";
@@ -14,9 +14,10 @@ import { Room } from "./room";
 export function WorkspaceScene({ className }: { className?: string }) {
   const deskId = useWorkspaceStore((s) => s.deskId);
   const chairId = useWorkspaceStore((s) => s.chairId);
+  const monitorId = useWorkspaceStore((s) => s.monitorId);
   const accessories = useWorkspaceStore((s) => s.accessories);
+  const hasMonitor = useWorkspaceStore(selectHasMonitor);
 
-  const hasMonitor = (accessories["acc-monitor-27"] ?? 0) + (accessories["acc-monitor-34"] ?? 0) > 0;
   const hasLamp = (accessories["acc-lamp"] ?? 0) > 0;
   const hasPlant = (accessories["acc-plant"] ?? 0) > 0;
   const hasKeyboard = (accessories["acc-keyboard"] ?? 0) > 0;
@@ -44,6 +45,10 @@ export function WorkspaceScene({ className }: { className?: string }) {
             <stop offset="0%" stopColor="#123f3a" />
             <stop offset="100%" stopColor="#2e8b6a" />
           </linearGradient>
+          <linearGradient id="screenGradGaming" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stopColor="#3a0a1a" />
+            <stop offset="100%" stopColor="#ff0055" />
+          </linearGradient>
         </defs>
 
         <Room />
@@ -52,7 +57,7 @@ export function WorkspaceScene({ className }: { className?: string }) {
           <Desk id={deskId} />
         </g>
 
-        {hasMonitor && <Monitors />}
+        {hasMonitor && <Monitors id={monitorId} />}
         {hasLaptopStand && <LaptopStand />}
         {hasLamp && <DeskLamp />}
         {hasKeyboard && <KeyboardSet />}

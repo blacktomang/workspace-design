@@ -2,14 +2,22 @@
 
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import { ACCESSORIES, CHAIRS, DESKS, getProduct } from "@/lib/products";
+import {
+  CHAIRS,
+  DESKS,
+  getProduct,
+  hasMonitorAccessory,
+  isMonitorId,
+  MONITOR_IDS,
+} from "@/lib/products";
+import { buildLines, linesTotal } from "@/lib/rental";
 
-export const MONITOR_IDS = ["acc-monitor-27", "acc-monitor-49-gaming"] as const;
+export type SelectableItem = "desk" | "chair" | "monitor";
 
 export interface WorkspaceState {
   deskId: string;
   chairId: string;
-  /** Which monitor type is selected (acc-monitor-27 or acc-monitor-34) */
+  /** Which monitor variant is selected (one of MONITOR_IDS) */
   monitorId: string;
   /** accessoryId -> quantity */
   accessories: Record<string, number>;
@@ -19,11 +27,15 @@ export interface WorkspaceState {
   /** Fullscreen + camera mode (UI-only, not persisted) */
   isFullscreen: boolean;
   cameraMode: "orbit" | "inroom";
-  selectedItem?: "desk" | "chair" | "monitor";
+  selectedItem?: SelectableItem;
   showItemPopup: boolean;
 
   setDesk: (id: string) => void;
   setChair: (id: string) => void;
+  /**
+   * Atomically switch the monitor variant: removes any other monitor from
+   * accessories and adds this one, so scene and pricing can never diverge.
+   */
   setMonitor: (id: string) => void;
   addAccessory: (id: string) => void;
   removeAccessory: (id: string) => void;
@@ -32,21 +44,61 @@ export interface WorkspaceState {
   reset: () => void;
   setFullscreen: (enabled: boolean) => void;
   setCameraMode: (mode: "orbit" | "inroom") => void;
-  selectItem: (itemType?: "desk" | "chair" | "monitor") => void;
+  selectItem: (itemType?: SelectableItem) => void;
   setShowItemPopup: (show: boolean) => void;
 }
 
 const DEFAULT_STATE = {
   deskId: DESKS[0].id,
   chairId: CHAIRS[0].id,
-  monitorId: MONITOR_IDS[1],
-  accessories: { "acc-monitor-49-gaming": 1 } as Record<string, number>,
+  monitorId: MONITOR_IDS[1] as string,
+  accessories: { [MONITOR_IDS[1]]: 1 } as Record<string, number>,
   posterImage: null as string | null,
   isFullscreen: false,
   cameraMode: "orbit" as "orbit" | "inroom",
-  selectedItem: undefined as "desk" | "chair" | "monitor" | undefined,
+  selectedItem: undefined as SelectableItem | undefined,
   showItemPopup: false,
 };
+
+/** Shape that actually lands in localStorage (see partialize). */
+interface PersistedWorkspace {
+  deskId: string;
+  chairId: string;
+  monitorId: string;
+  accessories: Record<string, number>;
+  posterImage: string | null;
+}
+
+/**
+ * v1 -> v2: product IDs changed over time (e.g. acc-monitor-34 became
+ * acc-monitor-49-gaming). Drop unknown accessories, normalize to exactly one
+ * monitor matching monitorId, and validate desk/chair against the catalog.
+ */
+function migratePersisted(persisted: unknown, version: number): PersistedWorkspace {
+  const state = (persisted ?? {}) as Partial<PersistedWorkspace>;
+  if (version < 2) {
+    const accessories: Record<string, number> = {};
+    for (const [id, qty] of Object.entries(state.accessories ?? {})) {
+      if (getProduct(id) && qty > 0) accessories[id] = qty;
+    }
+    const presentMonitors = MONITOR_IDS.filter((id) => (accessories[id] ?? 0) > 0);
+    for (const id of MONITOR_IDS) delete accessories[id];
+    if (presentMonitors.length > 0) {
+      const keep =
+        state.monitorId && (presentMonitors as readonly string[]).includes(state.monitorId)
+          ? state.monitorId
+          : presentMonitors[0];
+      accessories[keep] = 1;
+      state.monitorId = keep;
+    } else if (!state.monitorId || !isMonitorId(state.monitorId)) {
+      state.monitorId = DEFAULT_STATE.monitorId;
+    }
+    state.accessories = accessories;
+    if (!getProduct(state.deskId ?? "")) state.deskId = DEFAULT_STATE.deskId;
+    if (!getProduct(state.chairId ?? "")) state.chairId = DEFAULT_STATE.chairId;
+  }
+  return state as PersistedWorkspace;
+}
 
 export const useWorkspaceStore = create<WorkspaceState>()(
   persist(
@@ -54,7 +106,14 @@ export const useWorkspaceStore = create<WorkspaceState>()(
       ...DEFAULT_STATE,
       setDesk: (id) => set({ deskId: id }),
       setChair: (id) => set({ chairId: id }),
-      setMonitor: (id) => set({ monitorId: id }),
+      setMonitor: (id) =>
+        set((s) => {
+          if (!isMonitorId(id)) return s;
+          const accessories = { ...s.accessories };
+          for (const m of MONITOR_IDS) delete accessories[m];
+          accessories[id] = 1;
+          return { monitorId: id, accessories };
+        }),
       addAccessory: (id) =>
         set((s) => {
           const max = getProduct(id)?.maxQty ?? 99;
@@ -96,8 +155,9 @@ export const useWorkspaceStore = create<WorkspaceState>()(
     }),
     {
       name: "monis-workspace",
-      version: 1,
-      partialize: (state) => ({
+      version: 2,
+      migrate: migratePersisted,
+      partialize: (state): PersistedWorkspace => ({
         deskId: state.deskId,
         chairId: state.chairId,
         monitorId: state.monitorId,
@@ -109,24 +169,24 @@ export const useWorkspaceStore = create<WorkspaceState>()(
 );
 
 /** Derived selectors (pure — safe to use anywhere) */
+
+/**
+ * Weekly total — the same pricing pipeline as checkout (`buildLines`), so
+ * the price bar and the WhatsApp quote can never disagree.
+ */
 export function selectWeeklyTotal(
-  s: Pick<WorkspaceState, "deskId" | "chairId" | "monitorId" | "accessories">
+  s: Pick<WorkspaceState, "deskId" | "chairId" | "accessories">
 ) {
-  const desk = getProduct(s.deskId)?.priceWeekly ?? 0;
-  const chair = getProduct(s.chairId)?.priceWeekly ?? 0;
-  const monitor = s.accessories["acc-monitor-27"] || s.accessories["acc-monitor-49-gaming"]
-    ? (getProduct(s.monitorId)?.priceWeekly ?? 0)
-    : 0;
-  const accessories = Object.entries(s.accessories).reduce((sum, [id, qty]) => {
-    // Skip monitor IDs — they're priced via monitorId above
-    if (id === "acc-monitor-27" || id === "acc-monitor-49-gaming") return sum;
-    return sum + (getProduct(id)?.priceWeekly ?? 0) * qty;
-  }, 0);
-  return desk + chair + monitor + accessories;
+  return linesTotal(
+    buildLines({ deskId: s.deskId, chairId: s.chairId, accessories: s.accessories })
+  );
 }
 
 export function selectItemCount(s: Pick<WorkspaceState, "accessories">) {
   return Object.values(s.accessories).reduce((a, b) => a + b, 0);
 }
 
-export { DESKS, CHAIRS, ACCESSORIES };
+/** True when any monitor accessory is selected. */
+export function selectHasMonitor(s: Pick<WorkspaceState, "accessories">) {
+  return hasMonitorAccessory(s.accessories);
+}

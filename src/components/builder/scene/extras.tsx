@@ -1,5 +1,10 @@
-/** Single monitor on the desk, centered. */
-export function Monitors() {
+/** Single monitor on the desk, centered. Variant matches `monitorId`. */
+export function Monitors({ id }: { id: string }) {
+  if (id === "acc-monitor-49-gaming") return <GamingMonitor />;
+  return <StandardMonitor />;
+}
+
+function StandardMonitor() {
   return (
     <g className="scene-pop">
       <ellipse cx="450" cy="352" rx="20" ry="5" fill="#26262c" />
@@ -19,6 +24,37 @@ export function Monitors() {
         width="134"
         height="82"
         rx="4"
+        className="fill-primary opacity-0 dark:opacity-15"
+      />
+    </g>
+  );
+}
+
+/** 49" curved ultra-wide — wider panel, flat base stand, accent LED. */
+function GamingMonitor() {
+  return (
+    <g className="scene-pop">
+      {/* flat base plate + neck */}
+      <rect x="398" y="348" width="104" height="6" rx="3" fill="#16181b" />
+      <rect x="445" y="316" width="10" height="34" fill="#16181b" />
+      {/* ultra-wide curved panel */}
+      <rect x="335" y="220" width="230" height="100" rx="10" fill="#1a1b1e" />
+      <rect x="343" y="228" width="214" height="84" rx="5" fill="url(#screenGradGaming)" />
+      {/* game HUD bars */}
+      <g fill="#ffb3cd" opacity="0.7">
+        <rect x="362" y="244" width="58" height="6" rx="3" />
+        <rect x="362" y="258" width="88" height="6" rx="3" />
+        <rect x="362" y="272" width="40" height="6" rx="3" />
+      </g>
+      {/* accent status LED */}
+      <circle cx="450" cy="316" r="2.5" fill="#ff0055" />
+      {/* screen glow in dark mode */}
+      <rect
+        x="343"
+        y="228"
+        width="214"
+        height="84"
+        rx="5"
         className="fill-primary opacity-0 dark:opacity-15"
       />
     </g>

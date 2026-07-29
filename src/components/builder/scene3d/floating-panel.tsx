@@ -1,16 +1,17 @@
 "use client";
 
-import { Check, Eye, ImagePlus, Keyboard, Lamp, Leaf, Monitor } from "lucide-react";
-import { DESKS, CHAIRS, MONITOR_IDS, useWorkspaceStore } from "@/lib/store/workspace-store";
-import { getProduct } from "@/lib/products";
+import { Check, Eye, Keyboard, Lamp, Leaf, Monitor } from "lucide-react";
+import { CHAIRS, DESKS, getProduct, MONITOR_IDS } from "@/lib/products";
+import { useWorkspaceStore } from "@/lib/store/workspace-store";
 import { cn, formatUSD } from "@/lib/utils";
 
+// NB: the poster is intentionally absent — it needs an uploaded image, so it
+// has dedicated UI (catalog PosterCard + clicking the 3D frame), not a toggle.
 const EXTRAS: { id: string; label: string; icon: typeof Lamp; accessorKey: string }[] = [
   { id: "acc-lamp", label: "Desk Lamp", icon: Lamp, accessorKey: "acc-lamp" },
   { id: "acc-plant", label: "Plant", icon: Leaf, accessorKey: "acc-plant" },
   { id: "acc-keyboard", label: "Keyboard", icon: Keyboard, accessorKey: "acc-keyboard" },
   { id: "acc-laptop-stand", label: "Laptop Stand", icon: Monitor, accessorKey: "acc-laptop-stand" },
-  { id: "acc-poster", label: "Poster", icon: ImagePlus, accessorKey: "acc-poster" },
 ];
 
 export function FloatingPanel() {

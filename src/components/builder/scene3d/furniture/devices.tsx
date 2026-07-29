@@ -3,7 +3,7 @@
 import { RoundedBox } from "@react-three/drei";
 import { useMemo } from "react";
 import * as THREE from "three";
-import { useWorkspaceStore } from "@/lib/store/workspace-store";
+import { selectHasMonitor, useWorkspaceStore } from "@/lib/store/workspace-store";
 import { usePopIn } from "../use-pop-in";
 import { DESK_CENTER, DESK_TOP_Y } from "./desks";
 import { GamingMonitorModel } from "./gaming-monitor";
@@ -150,9 +150,7 @@ function MonitorModel({
 /** Tall LED bar lamp — light shines over the monitor screen. */
 export function Lamp() {
   const ref = usePopIn("lamp");
-  const hasMonitor = useWorkspaceStore(
-    (s) => (s.accessories["acc-monitor-27"] ?? 0) + (s.accessories["acc-monitor-34"] ?? 0) > 0
-  );
+  const hasMonitor = useWorkspaceStore(selectHasMonitor);
 
   // Position to the right of the monitor, tall enough to clear the screen
   const lampX = hasMonitor ? DESK_CENTER[0] + 0.62 : DESK_CENTER[0] + 0.68;
@@ -265,10 +263,10 @@ export function LaptopStand() {
       </mesh>
 
       {/* Height-adjust collar */}
-      <mesh position={[0, 1, 0]}>
+      {/* <mesh position={[0, 1, 0]}>
         <cylinderGeometry args={[0.03, 0.03, 0.014, 20]} />
         <meshStandardMaterial {...ALUMINUM_JOINT} />
-      </mesh>
+      </mesh> */}
 
       {/* Horizontal arm */}
       <mesh position={[0, 0.255, 0.05]} rotation={[0, 0, 0]}>

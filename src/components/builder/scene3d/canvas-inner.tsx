@@ -3,9 +3,8 @@
 import { ContactShadows, OrbitControls } from "@react-three/drei";
 import { Canvas, useThree } from "@react-three/fiber";
 import gsap from "gsap";
-import { useEffect, useRef } from "react";
-import type { OrbitControls as OrbitControlsImpl } from "three-stdlib";
-import { useWorkspaceStore } from "@/lib/store/workspace-store";
+import { type ComponentRef, useEffect, useRef } from "react";
+import { selectHasMonitor, useWorkspaceStore } from "@/lib/store/workspace-store";
 import { ChairModel } from "./furniture/chairs";
 import { DeskModel } from "./furniture/desks";
 import { KeyboardSet, Lamp, LaptopStand, Monitors } from "./furniture/devices";
@@ -22,7 +21,7 @@ const INROOM_TARGET: [number, number, number] = [0.2, 0.5, -1.65];
 function CameraController() {
   const { camera } = useThree();
   const cameraMode = useWorkspaceStore((s) => s.cameraMode);
-  const controlsRef = useRef<OrbitControlsImpl>(null);
+  const controlsRef = useRef<ComponentRef<typeof OrbitControls>>(null);
   const animating = useRef(false);
 
   useEffect(() => {
@@ -103,7 +102,7 @@ export default function CanvasInner() {
   const selectItem = useWorkspaceStore((s) => s.selectItem);
   const selectedItem = useWorkspaceStore((s) => s.selectedItem);
 
-  const hasMonitor = (accessories["acc-monitor-27"] ?? 0) + (accessories["acc-monitor-49-gaming"] ?? 0) > 0;
+  const hasMonitor = useWorkspaceStore(selectHasMonitor);
   const hasLamp = (accessories["acc-lamp"] ?? 0) > 0;
   const hasPlant = (accessories["acc-plant"] ?? 0) > 0;
   const hasKeyboard = (accessories["acc-keyboard"] ?? 0) > 0;

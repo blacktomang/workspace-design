@@ -1,8 +1,6 @@
 export function Desk({ id }: { id: string }) {
   switch (id) {
     case "desk-standing":
-      return <BambooDesk />;
-    case "desk-motorized-standing":
       return <MotorizedStandingDesk />;
     case "desk-compact":
       return <CompactDesk />;
@@ -24,23 +22,6 @@ function OakDesk() {
       {/* top */}
       <rect x="266" y="350" width="368" height="16" rx="6" fill="#d9a066" />
       <rect x="266" y="362" width="368" height="5" rx="2" fill="#bd8450" />
-    </g>
-  );
-}
-
-/** Bamboo standing desk — light top, T-legs with feet */
-function BambooDesk() {
-  return (
-    <g>
-      <rect x="258" y="508" width="92" height="13" rx="6" fill="#6e6258" />
-      <rect x="550" y="508" width="92" height="13" rx="6" fill="#6e6258" />
-      <rect x="294" y="363" width="16" height="112" rx="6" fill="#6e6258" />
-      <rect x="590" y="363" width="16" height="112" rx="6" fill="#6e6258" />
-      {/* crossbar */}
-      <rect x="310" y="470" width="280" height="8" rx="4" fill="#7d7166" />
-      {/* top */}
-      <rect x="266" y="348" width="368" height="16" rx="6" fill="#e3c98f" />
-      <rect x="266" y="360" width="368" height="5" rx="2" fill="#c9ab6d" />
     </g>
   );
 }
