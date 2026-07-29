@@ -69,11 +69,11 @@ export const ACCESSORIES: Product[] = [
     maxQty: 1,
   },
   {
-    id: "acc-monitor-34",
-    name: '34" 4K Gaming Monitor',
+    id: "acc-monitor-49-gaming",
+    name: '49" Curved Ultra-Wide Gaming Monitor',
     category: "accessory",
-    description: "Ultrawide curved display — immersive and fast.",
-    priceWeekly: 14,
+    description: "Massive DQHD curved display with 240Hz refresh rate, HDR1000, and flat base stand. Ultimate gaming immersion.",
+    priceWeekly: 20,
     maxQty: 1,
   },
   {

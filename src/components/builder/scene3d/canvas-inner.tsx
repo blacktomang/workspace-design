@@ -23,7 +23,7 @@ export default function CanvasInner() {
 
   const [interacted, setInteracted] = useState(false);
 
-  const hasMonitor = (accessories["acc-monitor-27"] ?? 0) + (accessories["acc-monitor-34"] ?? 0) > 0;
+  const hasMonitor = Object.keys(accessories).length > 0
   const hasLamp = (accessories["acc-lamp"] ?? 0) > 0;
   const hasPlant = (accessories["acc-plant"] ?? 0) > 0;
   const hasKeyboard = (accessories["acc-keyboard"] ?? 0) > 0;

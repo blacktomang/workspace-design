@@ -4,7 +4,7 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { ACCESSORIES, CHAIRS, DESKS, getProduct } from "@/lib/products";
 
-export const MONITOR_IDS = ["acc-monitor-27", "acc-monitor-34"] as const;
+export const MONITOR_IDS = ["acc-monitor-27", "acc-monitor-49-gaming"] as const;
 
 export interface WorkspaceState {
   deskId: string;
@@ -84,12 +84,12 @@ export function selectWeeklyTotal(
 ) {
   const desk = getProduct(s.deskId)?.priceWeekly ?? 0;
   const chair = getProduct(s.chairId)?.priceWeekly ?? 0;
-  const monitor = s.accessories["acc-monitor-27"] || s.accessories["acc-monitor-34"]
+  const monitor = s.accessories["acc-monitor-27"] || s.accessories["acc-monitor-49-gaming"]
     ? (getProduct(s.monitorId)?.priceWeekly ?? 0)
     : 0;
   const accessories = Object.entries(s.accessories).reduce((sum, [id, qty]) => {
     // Skip monitor IDs — they're priced via monitorId above
-    if (id === "acc-monitor-27" || id === "acc-monitor-34") return sum;
+    if (id === "acc-monitor-27" || id === "acc-monitor-49-gaming") return sum;
     return sum + (getProduct(id)?.priceWeekly ?? 0) * qty;
   }, 0);
   return desk + chair + monitor + accessories;

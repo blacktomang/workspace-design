@@ -35,7 +35,7 @@ const TABS: { id: Category; label: string; icon: LucideIcon }[] = [
 
 const ACCESSORY_ICONS: Record<string, LucideIcon> = {
   "acc-monitor-27": Monitor,
-  "acc-monitor-34": Monitor,
+  "acc-monitor-49-gaming": Monitor,
   "acc-lamp": Lamp,
   "acc-plant": Leaf,
   "acc-keyboard": Keyboard,
@@ -139,6 +139,8 @@ function SelectCard({ product }: { product: Product }) {
 
 function AccessoryCard({ product }: { product: Product }) {
   const qty = useWorkspaceStore((s) => s.accessories[product.id] ?? 0);
+  const yo = useWorkspaceStore((s) => s);
+  console.log(yo)
   const addAccessory = useWorkspaceStore((s) => s.addAccessory);
   const removeAccessory = useWorkspaceStore((s) => s.removeAccessory);
 
@@ -146,8 +148,8 @@ function AccessoryCard({ product }: { product: Product }) {
     return <PosterCard product={product} qty={qty} />;
   }
 
-  // Monitors: show as a selectable type card (cycle between 27" and 34")
-  if (product.id === "acc-monitor-27" || product.id === "acc-monitor-34") {
+  // Monitors: show as a selectable type card (cycle between 27" and 49" gaming)
+  if (product.id === "acc-monitor-27" || product.id === "acc-monitor-49-gaming") {
     return <MonitorCard product={product} />;
   }
 
@@ -206,7 +208,7 @@ function AccessoryCard({ product }: { product: Product }) {
   );
 }
 
-/** Monitor card: click to toggle on/off, and cycle between 27" and 34" types. */
+/** Monitor card: click to toggle on/off, and cycle between 27" and 49" gaming types. */
 function MonitorCard({ product }: { product: Product }) {
   const monitorId = useWorkspaceStore((s) => s.monitorId);
   const accessories = useWorkspaceStore((s) => s.accessories);
@@ -215,7 +217,7 @@ function MonitorCard({ product }: { product: Product }) {
   const removeAccessory = useWorkspaceStore((s) => s.removeAccessory);
 
   const hasMonitor =
-    (accessories["acc-monitor-27"] ?? 0) + (accessories["acc-monitor-34"] ?? 0) > 0;
+    (accessories["acc-monitor-27"] ?? 0) + (accessories["acc-monitor-49-gaming"] ?? 0) > 0;
   const isSelected = hasMonitor && monitorId === product.id;
   const Icon = Monitor;
 
