@@ -4,7 +4,7 @@ import { useWorkspaceStore } from "@/lib/store/workspace-store";
 import { cn } from "@/lib/utils";
 import { Chair } from "./chairs";
 import { Desk } from "./desks";
-import { DeskLamp, KeyboardSet, Monitors, Plant } from "./extras";
+import { DeskLamp, KeyboardSet, LaptopStand, Monitors, Plant } from "./extras";
 import { Room } from "./room";
 
 /**
@@ -16,10 +16,11 @@ export function WorkspaceScene({ className }: { className?: string }) {
   const chairId = useWorkspaceStore((s) => s.chairId);
   const accessories = useWorkspaceStore((s) => s.accessories);
 
-  const monitorCount = Math.min(accessories["acc-monitor"] ?? 0, 3);
+  const hasMonitor = (accessories["acc-monitor-27"] ?? 0) + (accessories["acc-monitor-34"] ?? 0) > 0;
   const hasLamp = (accessories["acc-lamp"] ?? 0) > 0;
   const hasPlant = (accessories["acc-plant"] ?? 0) > 0;
   const hasKeyboard = (accessories["acc-keyboard"] ?? 0) > 0;
+  const hasLaptopStand = (accessories["acc-laptop-stand"] ?? 0) > 0;
 
   return (
     <div
@@ -51,7 +52,8 @@ export function WorkspaceScene({ className }: { className?: string }) {
           <Desk id={deskId} />
         </g>
 
-        {monitorCount > 0 && <Monitors count={monitorCount} />}
+        {hasMonitor && <Monitors />}
+        {hasLaptopStand && <LaptopStand />}
         {hasLamp && <DeskLamp />}
         {hasKeyboard && <KeyboardSet />}
 
