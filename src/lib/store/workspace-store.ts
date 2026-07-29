@@ -87,7 +87,8 @@ export const useWorkspaceStore = create<WorkspaceState>()(
               ? { ...s.accessories, "acc-poster": 1 }
               : s.accessories,
         })),
-      setFullscreen: (enabled) => set({ isFullscreen: enabled }),
+      setFullscreen: (enabled) =>
+        set({ isFullscreen: enabled, ...(enabled ? {} : { cameraMode: "orbit" as const }) }),
       setCameraMode: (mode) => set({ cameraMode: mode }),
       selectItem: (itemType) => set({ selectedItem: itemType, showItemPopup: !!itemType }),
       setShowItemPopup: (show) => set({ showItemPopup: show }),
