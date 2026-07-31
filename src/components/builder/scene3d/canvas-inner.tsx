@@ -5,6 +5,7 @@ import { Canvas, useThree } from "@react-three/fiber";
 import gsap from "gsap";
 import { type ComponentRef, useEffect, useRef } from "react";
 import { selectHasMonitor, useWorkspaceStore } from "@/lib/store/workspace-store";
+import { useBreakpoint } from "@/hooks/use-breakpoint";
 import { ChairModel } from "./furniture/chairs";
 import { DeskModel } from "./furniture/desks";
 import { KeyboardSet, Lamp, LaptopStand, Monitors } from "./furniture/devices";
@@ -14,12 +15,18 @@ import { Room } from "./room";
 
 const DEFAULT_CAMERA: [number, number, number] = [0.2, 1.5, 2.2];
 const DEFAULT_TARGET: [number, number, number] = [0.2, 0.9, -1.65];
+/** Mobile: the room is taller than wide on portrait, so pull the camera way back. */
+const MOBILE_CAMERA: [number, number, number] = [0.2, 1.5, 4.0];
+const MOBILE_TARGET: [number, number, number] = [0.2, 0.9, -1.65];
 const INROOM_CAMERA: [number, number, number] = [0.2, 1.5, -0.95];
 const INROOM_TARGET: [number, number, number] = [0.2, 0.5, -1.65];
+const MOBILE_INROOM_CAMERA: [number, number, number] = [0.2, 1.5, 0.2];
+const MOBILE_INROOM_TARGET: [number, number, number] = [0.2, 0.5, -1.65];
 
 /** Smooth GSAP camera transition between two positions/targets */
 function CameraController() {
   const { camera } = useThree();
+  const { isMobile } = useBreakpoint();
   const cameraMode = useWorkspaceStore((s) => s.cameraMode);
   const controlsRef = useRef<ComponentRef<typeof OrbitControls>>(null);
   const animating = useRef(false);
@@ -31,8 +38,12 @@ function CameraController() {
     }
     animating.current = true;
 
-    const toPos = cameraMode === "inroom" ? INROOM_CAMERA : DEFAULT_CAMERA;
-    const toTarget = cameraMode === "inroom" ? INROOM_TARGET : DEFAULT_TARGET;
+    const toPos = cameraMode === "inroom"
+      ? isMobile ? MOBILE_INROOM_CAMERA : INROOM_CAMERA
+      : isMobile ? MOBILE_CAMERA : DEFAULT_CAMERA;
+    const toTarget = cameraMode === "inroom"
+      ? isMobile ? MOBILE_INROOM_TARGET : INROOM_TARGET
+      : isMobile ? MOBILE_TARGET : DEFAULT_TARGET;
 
     gsap.to(camera.position, {
       x: toPos[0],
@@ -57,7 +68,7 @@ function CameraController() {
       });
     }
 
-    const toFov = cameraMode === "inroom" ? 50 : 38;
+    const toFov = cameraMode === "inroom" ? 50 : isMobile ? 48 : 38;
     gsap.to(camera, {
       fov: toFov,
       duration: 0.3,
@@ -67,7 +78,7 @@ function CameraController() {
         camera.updateProjectionMatrix();
       },
     });
-  }, [cameraMode, camera]);
+  }, [cameraMode, isMobile, camera]);
 
   return (
     <OrbitControls
