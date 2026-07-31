@@ -29,11 +29,11 @@ const CATEGORY_ITEMS: Record<Category, Product[]> = {
   accessory: ACCESSORIES,
 };
 
-export function CatalogPanel() {
+export function CatalogPanel({ className }: { className?: string }) {
   const [tab, setTab] = useState<Category | "monitor">("desk");
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className={cn("flex flex-col gap-4", className)}>
       <div className="grid grid-cols-4 gap-1 rounded-full bg-muted p-1">
         {TABS.map(({ id, label, icon: Icon }) => (
           <button

@@ -16,8 +16,8 @@ export default function BuilderExperience() {
   return (
     <>
       <div className="mt-10 grid items-start gap-6 lg:grid-cols-[340px_minmax(0,1fr)]">
-        <WorkspaceCanvas className="order-1 animate-fade-up lg:order-2" />
-        <CatalogPanel />
+        <WorkspaceCanvas className="order-0 animate-fade-up lg:order-2" />
+        <CatalogPanel className="order-1 lg:order-0" />
       </div>
 
       <PriceBar />

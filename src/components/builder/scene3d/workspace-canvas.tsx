@@ -107,17 +107,22 @@ export function WorkspaceCanvas({ className }: { className?: string }) {
         )}
       </button>
 
-      {/* Orbit hint — only when not fullscreen */}
-      {!isFullscreen && (
-        <div className="pointer-events-none absolute bottom-3 left-3 flex items-center gap-3 rounded-full border border-border bg-background/85 px-3 py-1.5 text-xs text-muted-foreground backdrop-blur">
-          <span className="inline-flex items-center gap-1">
-            <Orbit className="size-3.5" /> Drag to orbit
-          </span>
-          <span className="inline-flex items-center gap-1">
-            <MousePointerClick className="size-3.5" /> Click items to swap
-          </span>
-        </div>
-      )}
+      {/* Orbit hint — always visible; pushed up in fullscreen to clear the mobile bottom sheet */}
+      <div
+        className={cn(
+          "pointer-events-none absolute left-3 flex items-center gap-3 rounded-full border border-border bg-background/85 px-3 py-1.5 text-xs text-muted-foreground backdrop-blur",
+          isFullscreen
+            ? "bottom-24 lg:bottom-4"
+            : "bottom-3"
+        )}
+      >
+        <span className="inline-flex items-center gap-1">
+          <Orbit className="size-3.5" /> Drag to orbit
+        </span>
+        <span className="inline-flex items-center gap-1">
+          <MousePointerClick className="size-3.5" /> Click items to swap
+        </span>
+      </div>
 
       {/* Floating panel — only visible in fullscreen */}
       {isFullscreen && <FloatingPanel />}
